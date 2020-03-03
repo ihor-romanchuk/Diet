@@ -32,9 +32,29 @@ namespace Diet.Database
 
                 entity.Property(e => e.DateTimeCreated).HasDefaultValueSql("GETUTCDATE()");
 
-                entity.HasOne(p => p.User)
-                    .WithOne(d => d.Meals)
-                    .HasForeignKey<MealEntity>(d => d.UserId);
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Meals)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_Meals_User")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<SettingEntity>(entity =>
+            {
+                entity.HasKey(e => e.UserId);
+
+                entity.Property(e => e.Type)
+                    .IsRequired();
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Settings)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_Settings_User")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
