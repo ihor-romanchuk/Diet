@@ -1,12 +1,17 @@
-import { RouteProps } from 'react-router-dom';
-import { formatRoute } from 'react-router-named-routes';
-import history from '../history';
+import { RouteProps } from "react-router-dom";
+import { formatRoute } from "react-router-named-routes";
+import history from "../history";
 
-import MealsPage from '../pages/meals';
+import MealsPage from "../pages/meals";
+import AddEditMealsPage from "../pages/addEditMeal";
 
-import { Login } from '../authorization/Login';
-import { Logout } from '../authorization/Logout';
-import { ApplicationPaths, LoginActions, LogoutActions } from '../authorization/ApiAuthorizationConstants';
+import { Login } from "../authorization/Login";
+import { Logout } from "../authorization/Logout";
+import {
+  ApplicationPaths,
+  LoginActions,
+  LogoutActions
+} from "../authorization/ApiAuthorizationConstants";
 
 interface CustomRouteProps extends RouteProps {
   allowAnonymous?: boolean;
@@ -28,16 +33,27 @@ class ParameterlessRoute extends CustomRoute {
 }
 
 class ParameterizedRoute<T> extends CustomRoute {
-  go(params: T = null, queryParams?: any, rewriteHistory?: boolean, smartReloadEnabled: boolean = true): void {
+  go(
+    params: T = null,
+    queryParams?: any,
+    rewriteHistory?: boolean,
+    smartReloadEnabled: boolean = true
+  ): void {
     let url: string = formatRoute(this.props.path, params);
     let needReload: boolean = url === window.location.pathname;
     if (queryParams) {
       url += `?${Object.keys(queryParams)
-        .filter(key => queryParams[key] != null && (!Array.isArray(queryParams[key]) || queryParams[key].length > 0))
-        .map(key =>
-          Array.isArray(queryParams[key]) ? `${key}=${queryParams[key].join(',')}` : `${key}=${queryParams[key]}`
+        .filter(
+          key =>
+            queryParams[key] != null &&
+            (!Array.isArray(queryParams[key]) || queryParams[key].length > 0)
         )
-        .join('&')}`;
+        .map(key =>
+          Array.isArray(queryParams[key])
+            ? `${key}=${queryParams[key].join(",")}`
+            : `${key}=${queryParams[key]}`
+        )
+        .join("&")}`;
     }
 
     if (rewriteHistory) {
@@ -56,10 +72,20 @@ class Router {
   static get routes() {
     return {
       home: new ParameterizedRoute<{}>({
-        path: '/',
+        path: "/",
         exact: true,
         component: MealsPage,
         allowAnonymous: true
+      }),
+      addMeal: new ParameterlessRoute({
+        path: "/meals/add",
+        exact: true,
+        component: AddEditMealsPage
+      }),
+      editSneakers: new ParameterizedRoute<{ id: number }>({
+        path: "/meals/edit/:id",
+        exact: true,
+        component: AddEditMealsPage
       }),
       login: new ParameterlessRoute({
         path: ApplicationPaths.Login,

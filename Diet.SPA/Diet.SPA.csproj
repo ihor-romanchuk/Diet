@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Diet.Core\Diet.Core.csproj" />
     <ProjectReference Include="..\Diet.Database\Diet.Database.csproj" />
   </ItemGroup>
 

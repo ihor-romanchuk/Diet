@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diet.SPA", "Diet.SPA\Diet.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diet.Database", "Diet.Database\Diet.Database.csproj", "{4C02AF60-CFF9-4DC3-A90D-2468BB3B6633}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diet.Core", "Diet.Core\Diet.Core.csproj", "{0BABF212-65AC-4251-AE20-F56C77D021DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4C02AF60-CFF9-4DC3-A90D-2468BB3B6633}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C02AF60-CFF9-4DC3-A90D-2468BB3B6633}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C02AF60-CFF9-4DC3-A90D-2468BB3B6633}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BABF212-65AC-4251-AE20-F56C77D021DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BABF212-65AC-4251-AE20-F56C77D021DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BABF212-65AC-4251-AE20-F56C77D021DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BABF212-65AC-4251-AE20-F56C77D021DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

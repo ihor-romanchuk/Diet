@@ -45,7 +45,9 @@ export class AuthorizeService {
   async signIn(state): Promise<any> {
     await this.ensureUserManagerInitialized();
     try {
-      const silentUser = await this.userManager.signinSilent(this.createArguments());
+      const silentUser = await this.userManager.signinSilent(
+        this.createArguments()
+      );
       this.updateState(silentUser);
       return this.success(state);
     } catch (silentError) {
@@ -59,7 +61,9 @@ export class AuthorizeService {
           );
         }
 
-        const popUpUser = await this.userManager.signinPopup(this.createArguments());
+        const popUpUser = await this.userManager.signinPopup(
+          this.createArguments()
+        );
         this.updateState(popUpUser);
         return this.success(state);
       } catch (popUpError) {
@@ -128,7 +132,7 @@ export class AuthorizeService {
     try {
       const response = await this.userManager.signoutCallback(url);
       this.updateState(null);
-      return this.success(response && response.data);
+      return this.success(response && response.state);
     } catch (error) {
       console.log(`There was an error trying to log out '${error}'.`);
       return this.error(error);
@@ -142,16 +146,25 @@ export class AuthorizeService {
   }
 
   subscribe(callback) {
-    this._callbacks.push({ callback, subscription: this._nextSubscriptionId++ });
+    this._callbacks.push({
+      callback,
+      subscription: this._nextSubscriptionId++
+    });
     return this._nextSubscriptionId - 1;
   }
 
   unsubscribe(subscriptionId) {
     const subscriptionIndex = this._callbacks
-      .map((element, index) => (element.subscription === subscriptionId ? { found: true, index } : { found: false }))
+      .map((element, index) =>
+        element.subscription === subscriptionId
+          ? { found: true, index }
+          : { found: false }
+      )
       .filter(element => element.found === true);
     if (subscriptionIndex.length !== 1) {
-      throw new Error(`Found an invalid number of subscriptions ${subscriptionIndex.length}`);
+      throw new Error(
+        `Found an invalid number of subscriptions ${subscriptionIndex.length}`
+      );
     }
 
     this._callbacks.splice(subscriptionIndex[0].index, 1);
@@ -185,7 +198,9 @@ export class AuthorizeService {
       return;
     }
 
-    let response = await fetch(ApplicationPaths.ApiAuthorizationClientConfigurationUrl);
+    let response = await fetch(
+      ApplicationPaths.ApiAuthorizationClientConfigurationUrl
+    );
     if (!response.ok) {
       throw new Error(`Could not load settings for '${ApplicationName}'`);
     }
