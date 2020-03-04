@@ -1,19 +1,12 @@
-import { RouteProps } from "react-router-dom";
-import { formatRoute } from "react-router-named-routes";
-import history from "../history";
+import { RouteProps } from 'react-router-dom';
+import { formatRoute } from 'react-router-named-routes';
+import history from '../history';
 
-import HomePage from "../pages/home";
-import BrandsPage from "../pages/brands";
-import LocationsPage from "../pages/locations";
-import SalePlacesPage from "../pages/salePlaces";
-import PurchaseSourcesPage from "../pages/purchaseSources";
-import AddEditSneakersPage from "../pages/addEditSneakers";
-import ViewSneakersPage from "../pages/viewSneakers";
-import SalesHistoryPage from "../pages/salesHistory";
+import MealsPage from '../pages/meals';
 
-import { Login } from "../authorization/Login";
-import { Logout } from "../authorization/Logout";
-import { ApplicationPaths, LoginActions, LogoutActions } from "../authorization/ApiAuthorizationConstants";
+import { Login } from '../authorization/Login';
+import { Logout } from '../authorization/Logout';
+import { ApplicationPaths, LoginActions, LogoutActions } from '../authorization/ApiAuthorizationConstants';
 
 interface CustomRouteProps extends RouteProps {
   allowAnonymous?: boolean;
@@ -42,9 +35,9 @@ class ParameterizedRoute<T> extends CustomRoute {
       url += `?${Object.keys(queryParams)
         .filter(key => queryParams[key] != null && (!Array.isArray(queryParams[key]) || queryParams[key].length > 0))
         .map(key =>
-          Array.isArray(queryParams[key]) ? `${key}=${queryParams[key].join(",")}` : `${key}=${queryParams[key]}`
+          Array.isArray(queryParams[key]) ? `${key}=${queryParams[key].join(',')}` : `${key}=${queryParams[key]}`
         )
-        .join("&")}`;
+        .join('&')}`;
     }
 
     if (rewriteHistory) {
@@ -63,51 +56,10 @@ class Router {
   static get routes() {
     return {
       home: new ParameterizedRoute<{}>({
-        path: "/",
+        path: '/',
         exact: true,
-        component: HomePage,
+        component: MealsPage,
         allowAnonymous: true
-      }),
-      salesHistory: new ParameterlessRoute({
-        path: "/sales",
-        exact: true,
-        component: SalesHistoryPage
-      }),
-      addSneakers: new ParameterlessRoute({
-        path: "/sneakers/add",
-        exact: true,
-        component: AddEditSneakersPage
-      }),
-      editSneakers: new ParameterizedRoute<{ id: number }>({
-        path: "/sneakers/edit/:id",
-        exact: true,
-        component: AddEditSneakersPage
-      }),
-      viewSneakers: new ParameterizedRoute<{ id: number }>({
-        path: "/sneakers/view/:id",
-        exact: true,
-        component: ViewSneakersPage,
-        allowAnonymous: true
-      }),
-      brands: new ParameterlessRoute({
-        path: "/brands",
-        exact: true,
-        component: BrandsPage
-      }),
-      locations: new ParameterlessRoute({
-        path: "/locations",
-        exact: true,
-        component: LocationsPage
-      }),
-      salePlaces: new ParameterlessRoute({
-        path: "/salePlaces",
-        exact: true,
-        component: SalePlacesPage
-      }),
-      purchaseSources: new ParameterlessRoute({
-        path: "/purchaseSources",
-        exact: true,
-        component: PurchaseSourcesPage
       }),
       login: new ParameterlessRoute({
         path: ApplicationPaths.Login,
@@ -144,15 +96,15 @@ class Router {
           action: LoginActions.Profile
         }
       }),
-      // register: new ParameterlessRoute({
-      //   path: ApplicationPaths.Register,
-      //   exact: true,
-      //   component: Login,
-      //   componentProps: {
-      //     action: LoginActions.Register
-      //   },
-      //   allowAnonymous: true
-      // }),
+      register: new ParameterlessRoute({
+        path: ApplicationPaths.Register,
+        exact: true,
+        component: Login,
+        componentProps: {
+          action: LoginActions.Register
+        },
+        allowAnonymous: true
+      }),
       logOut: new ParameterlessRoute({
         path: ApplicationPaths.LogOut,
         exact: true,

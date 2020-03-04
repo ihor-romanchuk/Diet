@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from "react";
-import Nav from "react-bootstrap/Nav";
-import { Link } from "react-router-dom";
-import authService from "./AuthorizeService";
-import { ApplicationPaths } from "./ApiAuthorizationConstants";
+import React, { Component, Fragment } from 'react';
+import Nav from 'react-bootstrap/Nav';
+import { Link } from 'react-router-dom';
+import authService from './AuthorizeService';
+import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 interface LoginMenuState {
   isAuthenticated: boolean;
@@ -41,9 +41,9 @@ export class LoginMenu extends Component<any, LoginMenuState> {
   render() {
     const { isAuthenticated, userName } = this.state;
     if (!isAuthenticated) {
-      // const registerPath = `${ApplicationPaths.Register}`;
+      const registerPath = `${ApplicationPaths.Register}`;
       const loginPath = `${ApplicationPaths.Login}`;
-      return this.anonymousView(loginPath);
+      return this.anonymousView(registerPath, loginPath);
     } else {
       const profilePath = `${ApplicationPaths.Profile}`;
       const logoutPath = { pathname: `${ApplicationPaths.LogOut}`, state: { local: true } };
@@ -62,10 +62,10 @@ export class LoginMenu extends Component<any, LoginMenuState> {
     );
   }
 
-  anonymousView(loginPath) {
+  anonymousView(registerPath, loginPath) {
     return (
       <Fragment>
-        {/* <Nav.Link href={registerPath}>Зареєструватися</Nav.Link> */}
+        <Nav.Link href={registerPath}>Зареєструватися</Nav.Link>
         <Nav.Link href={loginPath}>Увійти</Nav.Link>
       </Fragment>
     );
