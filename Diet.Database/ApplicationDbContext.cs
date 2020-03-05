@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Diet.Database
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUserEntity>
+    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUserEntity>, IApplicationDbContext
     {
         public ApplicationDbContext(
             DbContextOptions options,

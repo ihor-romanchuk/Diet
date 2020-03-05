@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Diet.Database.Entities;
 
 namespace Diet.Core.Repositories.Interfaces
 {
-    interface IMealsRepository
+    public interface IMealsRepository
     {
-        IEnumerable<MealEntity> Get(string userId);
+        IQueryable<MealEntity> Get(string userId);
 
         Task CreateUpdate(MealEntity meal);
 

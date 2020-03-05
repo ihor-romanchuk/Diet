@@ -1,3 +1,8 @@
+using AutoMapper;
+using Diet.Core.Repositories;
+using Diet.Core.Repositories.Interfaces;
+using Diet.Core.Services;
+using Diet.Core.Services.Interfaces;
 using Diet.Database;
 using Diet.Database.Entities;
 using Microsoft.AspNetCore.Authentication;
@@ -44,6 +49,18 @@ namespace Diet.SPA
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MapperProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+            services.AddTransient<IMealsRepository, MealsRepository>();
+            services.AddTransient<IMealsService, MealsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

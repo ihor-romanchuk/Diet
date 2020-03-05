@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Diet.Core.Models
+namespace Diet.Core.Dtos
 {
-    public class MealModel
+    public class MealDto
     {
         public int Id { get; set; }
 
