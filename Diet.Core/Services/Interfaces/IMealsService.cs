@@ -7,5 +7,9 @@ namespace Diet.Core.Services.Interfaces
     public interface IMealsService
     {
         Task<List<MealDto>> Get(string userId);
+
+        Task CreateUpdate(MealDto mealDto);
+
+        Task Delete(int id);
     }
 }

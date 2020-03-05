@@ -26,5 +26,23 @@ namespace Diet.Core.Services
 
             return meals;
         }
+
+        public Task CreateUpdate(MealDto mealDto)
+        {
+            if (mealDto.Id == 0)
+            {
+
+            }
+            else
+            {
+                
+            }
+            var mealEntity = _mealsRepository.GetById()
+        }
+
+        public Task Delete(int id)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

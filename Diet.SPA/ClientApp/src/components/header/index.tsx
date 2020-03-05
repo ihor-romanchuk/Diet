@@ -26,7 +26,7 @@ class HeaderComponent extends Component<ReturnType<typeof mapStateToProps>, Head
   handleSelect = eventKey => {
     switch (eventKey) {
       case 'sneakers': {
-        Router.routes.home.go();
+        Router.routes.meals.go();
         break;
       }
       default: {
@@ -41,7 +41,7 @@ class HeaderComponent extends Component<ReturnType<typeof mapStateToProps>, Head
       <div className={styles.container}>
         <div className={styles.navigationContainer}>
           <Navbar bg="light" variant="light" expand="md">
-            <Navbar.Brand onClick={() => Router.routes.home.go()}>
+            <Navbar.Brand onClick={() => Router.routes.meals.go()}>
               <img src={Images.logo} className={styles.logo} alt="Diet" />
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />

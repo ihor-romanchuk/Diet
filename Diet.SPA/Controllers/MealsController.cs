@@ -27,5 +27,21 @@ namespace Diet.SPA.Controllers
 
             return result;
         }
+
+        [HttpPut]
+        public async Task<ActionResult> CreateUpdate(MealDto mealDto)
+        {
+            await _mealsService.CreateUpdate(mealDto);
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await _mealsService.Delete(id);
+
+            return NoContent();
+        }
     }
 }

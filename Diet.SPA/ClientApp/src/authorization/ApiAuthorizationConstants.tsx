@@ -1,6 +1,6 @@
 import config from '../config';
 
-export const ApplicationName = 'Crosstreet';
+export const ApplicationName = 'Diet.SPA';
 
 export const QueryParameterNames = {
   ReturnUrl: 'returnUrl',
@@ -25,7 +25,7 @@ const prefix = `/authentication`;
 
 export const ApplicationPaths = {
   DefaultLoginRedirectPath: '/',
-  ApiAuthorizationClientConfigurationUrl: `${config.baseUrl}/configuration/${ApplicationName}`,
+  ApiAuthorizationClientConfigurationUrl: `${config.baseUrl}/_configuration/${ApplicationName}`,
   ApiAuthorizationPrefix: prefix,
   Login: `${prefix}/${LoginActions.Login}`,
   LoginFailed: `${prefix}/${LoginActions.LoginFailed}`,

@@ -25,7 +25,7 @@ namespace Diet.Database
         DbSet<IdentityUserToken<string>> UserTokens { get; set; }
         int SaveChanges();
         int SaveChanges(bool acceptAllChangesOnSuccess);
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken);
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
         EntityEntry Entry(object entity);

@@ -10,7 +10,7 @@ namespace Diet.Database.Entities
 
         public string Name { get; set; }
 
-        public double Calories { get; set; }
+        public int Calories { get; set; }
 
         public DateTime DateTimeCreated { get; set; }
 

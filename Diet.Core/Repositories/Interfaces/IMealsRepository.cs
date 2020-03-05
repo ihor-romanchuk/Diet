@@ -8,7 +8,11 @@ namespace Diet.Core.Repositories.Interfaces
     {
         IQueryable<MealEntity> Get(string userId);
 
-        Task CreateUpdate(MealEntity meal);
+        Task<MealEntity> GetById(int id);
+
+        Task Create(MealEntity meal);
+
+        Task Update(MealEntity meal);
 
         Task Delete(int id);
     }
