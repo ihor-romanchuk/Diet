@@ -8,7 +8,10 @@ namespace Diet.SPA
     {
         public MapperProfile()
         {
-            CreateMap<MealEntity, MealDto>().ReverseMap();
+            CreateMap<MealEntity, MealDto>();
+            CreateMap<MealDto, MealEntity>().ForMember(
+                dest => dest.Id,
+                opt => opt.Ignore());
         }
     }
 }

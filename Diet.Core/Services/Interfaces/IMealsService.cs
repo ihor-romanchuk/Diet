@@ -6,10 +6,14 @@ namespace Diet.Core.Services.Interfaces
 {
     public interface IMealsService
     {
-        Task<List<MealDto>> Get(string userId);
+        Task<List<MealDto>> GetAsync();
 
-        Task CreateUpdate(MealDto mealDto);
+        Task<MealDto> GetByIdAsync(int id);
 
-        Task Delete(int id);
+        Task CreateAsync(MealDto mealDto);
+
+        Task UpdateAsync(MealDto mealDto);
+
+        Task DeleteAsync(int id);
     }
 }

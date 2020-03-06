@@ -7,7 +7,7 @@ namespace Diet.SPA
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Migrate().Run();
+            CreateHostBuilder(args).Build().Migrate().Seed().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)

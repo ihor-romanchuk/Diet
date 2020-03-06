@@ -5,6 +5,7 @@ using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
 using Diet.Core.Repositories.Interfaces;
 using Diet.Core.Services.Interfaces;
+using Diet.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diet.Core.Services
@@ -20,29 +21,53 @@ namespace Diet.Core.Services
             _mealsRepository = mealsRepository;
         }
 
-        public async Task<List<MealDto>> Get(string userId)
+        public async Task<List<MealDto>> GetAsync()
         {
-            List<MealDto> meals = await _mealsRepository.Get(userId).ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
+            List<MealDto> meals = await _mealsRepository.Get().ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
 
             return meals;
         }
 
-        public Task CreateUpdate(MealDto mealDto)
+        public async Task<MealDto> GetByIdAsync(int id)
         {
-            if (mealDto.Id == 0)
-            {
+            var result = _mapper.Map<MealDto>(await _mealsRepository.GetByIdAsync(id));
 
-            }
-            else
-            {
-                
-            }
-            var mealEntity = _mealsRepository.GetById()
+            return result;
         }
 
-        public Task Delete(int id)
+        public async Task CreateAsync(MealDto mealDto)
         {
-            throw new System.NotImplementedException();
+            var mealEntity = _mapper.Map<MealEntity>(mealDto);
+
+            await _mealsRepository.CreateAsync(mealEntity);
+        }
+
+        public async Task UpdateAsync(MealDto mealDto)
+        {
+            MealEntity mealEntity = null;
+
+            if (mealDto.Id != 0)
+            {
+                mealEntity = await _mealsRepository.GetByIdAsync(mealDto.Id);
+            }
+
+            //todo: throw not found exception
+            if (mealEntity != null)
+            {
+                _mapper.Map(mealDto, mealEntity);
+                await _mealsRepository.UpdateAsync(mealEntity);
+            }
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);
+
+            //todo: throw NotFoundException
+            if(mealEntity != null)
+            {
+                await _mealsRepository.DeleteAsync(mealEntity);
+            }
         }
     }
 }

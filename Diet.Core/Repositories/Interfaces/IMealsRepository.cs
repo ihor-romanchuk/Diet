@@ -6,14 +6,14 @@ namespace Diet.Core.Repositories.Interfaces
 {
     public interface IMealsRepository
     {
-        IQueryable<MealEntity> Get(string userId);
+        IQueryable<MealEntity> Get();
 
-        Task<MealEntity> GetById(int id);
+        Task<MealEntity> GetByIdAsync(int id);
 
-        Task Create(MealEntity meal);
+        Task CreateAsync(MealEntity meal);
 
-        Task Update(MealEntity meal);
+        Task UpdateAsync(MealEntity meal);
 
-        Task Delete(int id);
+        Task DeleteAsync(MealEntity meal);
     }
 }
