@@ -1,13 +1,11 @@
-import { RouteProps } from 'react-router-dom';
-import { formatRoute } from 'react-router-named-routes';
-import history from '../history';
+import { RouteProps } from "react-router-dom";
+import { formatRoute } from "react-router-named-routes";
+import history from "../history";
 
-import MealsPage from '../pages/meals';
-import AddEditMealPage from '../pages/addEditMeal';
-
-import { Login } from '../authorization/Login';
-import { Logout } from '../authorization/Logout';
-import { ApplicationPaths, LoginActions, LogoutActions } from '../authorization/ApiAuthorizationConstants';
+import LoginPage from "../pages/login";
+import RegisterPage from "../pages/register";
+import MealsPage from "../pages/meals";
+import AddEditMealPage from "../pages/addEditMeal";
 
 interface CustomRouteProps extends RouteProps {
   allowAnonymous?: boolean;
@@ -29,16 +27,27 @@ class ParameterlessRoute extends CustomRoute {
 }
 
 class ParameterizedRoute<T> extends CustomRoute {
-  go(params: T = null, queryParams?: any, rewriteHistory?: boolean, smartReloadEnabled: boolean = true): void {
+  go(
+    params: T = null,
+    queryParams?: any,
+    rewriteHistory?: boolean,
+    smartReloadEnabled: boolean = true
+  ): void {
     let url: string = formatRoute(this.props.path, params);
     let needReload: boolean = url === window.location.pathname;
     if (queryParams) {
       url += `?${Object.keys(queryParams)
-        .filter(key => queryParams[key] != null && (!Array.isArray(queryParams[key]) || queryParams[key].length > 0))
-        .map(key =>
-          Array.isArray(queryParams[key]) ? `${key}=${queryParams[key].join(',')}` : `${key}=${queryParams[key]}`
+        .filter(
+          key =>
+            queryParams[key] != null &&
+            (!Array.isArray(queryParams[key]) || queryParams[key].length > 0)
         )
-        .join('&')}`;
+        .map(key =>
+          Array.isArray(queryParams[key])
+            ? `${key}=${queryParams[key].join(",")}`
+            : `${key}=${queryParams[key]}`
+        )
+        .join("&")}`;
     }
 
     if (rewriteHistory) {
@@ -56,93 +65,34 @@ class ParameterizedRoute<T> extends CustomRoute {
 class Router {
   static get routes() {
     return {
-      meals: new ParameterizedRoute<{}>({
-        path: '/',
+      meals: new ParameterlessRoute({
+        path: "/",
         exact: true,
         component: MealsPage,
-        allowAnonymous: true
+        allowAnonymous: false
       }),
       addMeal: new ParameterlessRoute({
-        path: '/meals/add',
+        path: "/meals/add",
         exact: true,
         component: AddEditMealPage,
-        allowAnonymous: true
+        allowAnonymous: false
       }),
       editMeal: new ParameterizedRoute<{ id: number }>({
-        path: '/meals/edit/:id',
+        path: "/meals/edit/:id",
         exact: true,
         component: AddEditMealPage,
-        allowAnonymous: true
+        allowAnonymous: false
       }),
       login: new ParameterlessRoute({
-        path: ApplicationPaths.Login,
+        path: "/login",
         exact: true,
-        component: Login,
-        componentProps: {
-          action: LoginActions.Login
-        },
+        component: LoginPage,
         allowAnonymous: true
-      }),
-      loginFailed: new ParameterlessRoute({
-        path: ApplicationPaths.LoginFailed,
-        exact: true,
-        component: Login,
-        componentProps: {
-          action: LoginActions.LoginFailed
-        },
-        allowAnonymous: true
-      }),
-      loginCallback: new ParameterlessRoute({
-        path: ApplicationPaths.LoginCallback,
-        exact: true,
-        component: Login,
-        componentProps: {
-          action: LoginActions.LoginCallback
-        },
-        allowAnonymous: true
-      }),
-      profile: new ParameterlessRoute({
-        path: ApplicationPaths.Profile,
-        exact: true,
-        component: Login,
-        componentProps: {
-          action: LoginActions.Profile
-        }
       }),
       register: new ParameterlessRoute({
-        path: ApplicationPaths.Register,
+        path: "/register",
         exact: true,
-        component: Login,
-        componentProps: {
-          action: LoginActions.Register
-        },
-        allowAnonymous: true
-      }),
-      logOut: new ParameterlessRoute({
-        path: ApplicationPaths.LogOut,
-        exact: true,
-        component: Logout,
-        componentProps: {
-          action: LogoutActions.Logout
-        },
-        allowAnonymous: true
-      }),
-      logOutCallback: new ParameterlessRoute({
-        path: ApplicationPaths.LogOutCallback,
-        exact: true,
-        component: Logout,
-        componentProps: {
-          action: LogoutActions.LogoutCallback
-        },
-        allowAnonymous: true
-      }),
-      loggedOut: new ParameterlessRoute({
-        path: ApplicationPaths.LoggedOut,
-        exact: true,
-        component: Logout,
-        componentProps: {
-          action: LogoutActions.LoggedOut
-        },
+        component: RegisterPage,
         allowAnonymous: true
       })
     };

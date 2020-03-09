@@ -1,12 +1,216 @@
-import React, { Component } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router';
-//import Button from "react-bootstrap/Button";
+import React, { Component } from "react";
+import { withRouter, RouteComponentProps } from "react-router";
 
-import styles from './index.module.scss';
+import { Col } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import en from "date-fns/locale/en-US";
 
-class AddEditMealPage extends Component<RouteComponentProps> {
+import { createMeal, updateMeal } from "../../services/meals";
+
+import Router from "../../routing/router";
+
+import styles from "./index.module.scss";
+registerLocale("en-US", en);
+
+interface IRouteParams {
+  id: string;
+}
+
+interface MealModel {
+  id?: number;
+  name: string;
+  calories: number;
+  dateTimeCreated: Date;
+}
+
+interface IAddEditMealPageState {
+  isPageLoading: boolean;
+  isSaving: boolean;
+  isEdit: boolean;
+  errorMessages: any;
+  validated: boolean;
+  meal: MealModel;
+}
+
+class AddEditMealPage extends Component<
+  RouteComponentProps<IRouteParams>,
+  IAddEditMealPageState
+> {
+  constructor(props: any) {
+    super(props);
+
+    let id: number = 0;
+    try {
+      id = parseInt(this.props.match.params.id) || 0;
+    } catch (e) {}
+
+    this.state = {
+      isPageLoading: true,
+      isSaving: false,
+      isEdit: !!id,
+      errorMessages: {},
+      validated: false,
+      meal: {
+        id: id,
+        name: "",
+        calories: 0,
+        dateTimeCreated: new Date()
+      }
+    };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  async handleSubmit(event): Promise<void> {
+    if (!this.state.isSaving) {
+      this.setState({ isSaving: true });
+      event.preventDefault();
+      event.stopPropagation();
+
+      const form = event.currentTarget;
+      if (form.checkValidity() === true) {
+        this.setState({ validated: false });
+
+        try {
+          this.setState({
+            isSaving: true
+          });
+
+          if (this.state.isEdit) {
+            await updateMeal(this.state.meal);
+          } else {
+            await createMeal(this.state.meal);
+          }
+
+          Router.routes.meals.go();
+        } catch (e) {
+          this.setInvalidState(e);
+        }
+
+        this.setState({ isSaving: false });
+      } else {
+        this.setState({ validated: true, isSaving: false });
+      }
+    }
+  }
+
+  setInvalidState(data) {
+    //todo
+    if (data.errors && data.errors.length > 0) {
+      data.errors.map(e => {
+        let newErrorMessages = { ...this.state.errorMessages };
+        newErrorMessages[e.fieldName] = e.message;
+        this.setState({ errorMessages: newErrorMessages });
+      });
+    }
+  }
+
+  handleInput = e => {
+    const { name, value } = e.target;
+
+    this.setState(state => ({
+      meal: {
+        ...state.meal,
+        [name]: value
+      }
+    }));
+  };
+
   render() {
-    return <div className={styles.container}>Add edit meal</div>;
+    return (
+      <div className={styles.container}>
+        {this.state.isEdit && this.state.isPageLoading ? (
+          <Spinner animation="border" role="status" variant="success">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        ) : (
+          <Form
+            noValidate
+            validated={this.state.validated}
+            onSubmit={this.handleSubmit}
+          >
+            <Form.Row>
+              <Form.Group as={Col} xs={12} md={6}>
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  name="name"
+                  type="text"
+                  placeholder="Name..."
+                  value={this.state.meal.name}
+                  onChange={this.handleInput}
+                  required
+                />
+              </Form.Group>
+            </Form.Row>
+            <Form.Row>
+              <Form.Group as={Col} xs={12} md={6}>
+                <Form.Label>Calories</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="calories"
+                  min="0"
+                  pattern="[0-9]*"
+                  placeholder="Calories..."
+                  value={(this.state.meal.calories || "").toString()}
+                  onChange={this.handleInput}
+                  required
+                />
+              </Form.Group>
+            </Form.Row>
+            <Form.Row>
+              <Form.Group as={Col} xs={12} md={6}>
+                <Form.Label>Date {"&"} Time</Form.Label>
+                <DatePicker
+                  locale="en-US"
+                  showTimeSelect
+                  timeFormat="p"
+                  timeIntervals={15}
+                  dateFormat="Pp"
+                  timeCaption="time"
+                  className="form-control"
+                  wrapperClassName={styles.calendar}
+                  selected={this.state.meal.dateTimeCreated}
+                  onChange={date => {
+                    this.setState(state => {
+                      return { meal: { ...state.meal, dateTimeCreated: date } };
+                    });
+                  }}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errorMessages &&
+                    this.state.errorMessages["DateTimeCreated"]}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Form.Row>
+
+            <Form.Row>
+              <Form.Group as={Col} md={6}>
+                {this.state.isSaving ? (
+                  <Spinner
+                    variant="success"
+                    animation="border"
+                    role="status"
+                  ></Spinner>
+                ) : null}
+                <Button
+                  disabled={this.state.isSaving}
+                  variant="success"
+                  type="submit"
+                >
+                  Save
+                </Button>
+              </Form.Group>
+            </Form.Row>
+          </Form>
+        )}
+      </div>
+    );
   }
 }
 

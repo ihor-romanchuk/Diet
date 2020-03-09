@@ -6,7 +6,7 @@ import Body from "../components/body";
 import NotFound from "../pages/notFound";
 import Router from "./router";
 
-import AuthorizeRoute from "../authorization/AuthorizeRoute";
+import AuthorizeRoute from "../authentication/authorizeRoute";
 
 const DefaultLayoutComponent = ({ component: Component, ...rest }) => {
   return (
@@ -19,17 +19,31 @@ const DefaultLayoutComponent = ({ component: Component, ...rest }) => {
   );
 };
 
-const DefaultLayoutRoute = ({ component: Component, allowAnonymous, componentProps, ...rest }) => {
+const DefaultLayoutRoute = ({
+  component: Component,
+  allowAnonymous,
+  componentProps,
+  ...rest
+}) => {
   return allowAnonymous ? (
     <Route
       render={matchProps => (
-        <DefaultLayoutComponent component={Component} {...componentProps} {...matchProps}></DefaultLayoutComponent>
+        <DefaultLayoutComponent
+          component={Component}
+          {...componentProps}
+          {...matchProps}
+        ></DefaultLayoutComponent>
       )}
-      {...rest}></Route>
+      {...rest}
+    ></Route>
   ) : (
     <AuthorizeRoute
       component={matchProps => (
-        <DefaultLayoutComponent component={Component} {...componentProps} {...matchProps}></DefaultLayoutComponent>
+        <DefaultLayoutComponent
+          component={Component}
+          {...componentProps}
+          {...matchProps}
+        ></DefaultLayoutComponent>
       )}
       {...rest}
     />
@@ -43,7 +57,11 @@ class Routes extends React.Component {
         {Object.keys(Router.routes).map(key => (
           <DefaultLayoutRoute key={key} {...Router.routes[key].props} />
         ))}
-        <DefaultLayoutRoute allowAnonymous={true} componentProps={{}} component={NotFound} />
+        <DefaultLayoutRoute
+          allowAnonymous={true}
+          componentProps={{}}
+          component={NotFound}
+        />
       </Switch>
     );
   }

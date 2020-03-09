@@ -42,21 +42,14 @@ namespace Diet.SPA
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUserEntity, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddCors();
 
             // ===== Add Jwt Authentication ========
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
             services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-                })
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
                 {
                     cfg.RequireHttpsMetadata = false;
@@ -78,7 +71,7 @@ namespace Diet.SPA
                             }
                             return Task.CompletedTask;
                         }
-                    };
+                };
                 });
 
             services.AddAuthorization();
@@ -158,7 +151,7 @@ namespace Diet.SPA
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
                 .WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
-                .WithHeaders("Content-Type"));
+                .WithHeaders("Content-Type", "Authorization"));
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -2,7 +2,8 @@ import { combineReducers } from "redux";
 import userReducer from "./userReducer";
 
 export enum EReduxActionTypes {
-  SetIsAuthenticated = "SetIsAuthenticated"
+  RestoreAuthentication = "RestoreAuthentication",
+  Login = "Login"
 }
 
 export interface IReduxBaseAction {

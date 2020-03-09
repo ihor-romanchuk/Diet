@@ -2,11 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Diet.Database.Entities;
-using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Diet.Database
 {
@@ -14,8 +12,6 @@ namespace Diet.Database
     {
         DbSet<MealEntity> Meals { get; set; }
         DbSet<SettingEntity> Settings { get; set; }
-        DbSet<PersistedGrant> PersistedGrants { get; set; }
-        DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
         DbSet<IdentityUserRole<string>> UserRoles { get; set; }
         DbSet<IdentityRole> Roles { get; set; }
         DbSet<IdentityRoleClaim<string>> RoleClaims { get; set; }

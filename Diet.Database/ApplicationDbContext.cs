@@ -1,16 +1,13 @@
 ﻿using Diet.Database.Entities;
-using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Diet.Database
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUserEntity>, IApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUserEntity>, IApplicationDbContext
     {
         public ApplicationDbContext(
-            DbContextOptions options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
+            DbContextOptions options) : base(options)
         {
         }
 

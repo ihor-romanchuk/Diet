@@ -8,12 +8,9 @@ using System.Threading.Tasks;
 using Diet.Core;
 using Diet.Core.Dtos;
 using Diet.Database.Entities;
-using Diet.SPA.Models.AccountViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -112,9 +109,7 @@ namespace Diet.SPA.Controllers
 
             return new JwtDto
             {
-                Username = user.Id,
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Expiration = expirationDate
+                Token = new JwtSecurityTokenHandler().WriteToken(token)
             };
         }
 

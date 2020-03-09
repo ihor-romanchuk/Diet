@@ -1,20 +1,39 @@
 import { EReduxActionTypes } from "./rootReducer";
-import { IReduxSetIsAuthenticatedAction } from "../actions/userActions";
+import {
+  IReduxRestoreAuthenticationAction,
+  IReduxLoginAction
+} from "../actions/userActions";
 
 export interface IReduxUserState {
   isAuthenticated: boolean;
+  token: string;
 }
 
 const initialState: IReduxUserState = {
-  isAuthenticated: null
+  isAuthenticated: false,
+  token: null
 };
 
-type TUserReducerActions = IReduxSetIsAuthenticatedAction;
+type TUserReducerActions = IReduxRestoreAuthenticationAction &
+  IReduxLoginAction;
 
-export default function(state: IReduxUserState = initialState, action: TUserReducerActions) {
+export default function(
+  state: IReduxUserState = initialState,
+  action: TUserReducerActions
+) {
   switch (action.type) {
-    case EReduxActionTypes.SetIsAuthenticated:
-      return { ...state, isAuthenticated: action.isAuthenticated };
+    case EReduxActionTypes.RestoreAuthentication:
+      return {
+        ...state,
+        isAuthenticated: action.isAuthenticated,
+        token: action.token
+      };
+    case EReduxActionTypes.Login:
+      return {
+        ...state,
+        isAuthenticated: action.isAuthenticated,
+        token: action.token
+      };
     default:
       return state;
   }

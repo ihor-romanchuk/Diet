@@ -37,6 +37,7 @@ namespace Diet.Core.Services
 
         public async Task CreateAsync(MealDto mealDto)
         {
+            mealDto.Id = 0;
             var mealEntity = _mapper.Map<MealEntity>(mealDto);
 
             await _mealsRepository.CreateAsync(mealEntity);

@@ -1,32 +1,41 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { AppState } from '../../redux/reducers/rootReducer';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { AppState } from "../../redux/reducers/rootReducer";
+import Navbar from "react-bootstrap/Navbar";
+import Nav from "react-bootstrap/Nav";
 
-import { LoginMenu } from '../../authorization/LoginMenu';
+import Router from "../../routing/router";
+import Images from "../../assets/images/images";
 
-import Router from '../../routing/router';
-import Images from '../../assets/images/images';
-
-import styles from './index.module.scss';
+import styles from "./index.module.scss";
 
 interface HeaderComponentState {
   selectedTab: string;
 }
-class HeaderComponent extends Component<ReturnType<typeof mapStateToProps>, HeaderComponentState> {
+class HeaderComponent extends Component<
+  ReturnType<typeof mapStateToProps>,
+  HeaderComponentState
+> {
   constructor(props: ReturnType<typeof mapStateToProps>) {
     super(props);
 
-    this.state = { selectedTab: '' };
+    this.state = { selectedTab: "" };
   }
 
   componentDidMount() {}
 
   handleSelect = eventKey => {
     switch (eventKey) {
-      case 'sneakers': {
+      case "meals": {
         Router.routes.meals.go();
+        break;
+      }
+      case "login": {
+        Router.routes.login.go();
+        break;
+      }
+      case "register": {
+        Router.routes.register.go();
         break;
       }
       default: {
@@ -47,13 +56,16 @@ class HeaderComponent extends Component<ReturnType<typeof mapStateToProps>, Head
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="mr-auto" onSelect={this.handleSelect}>
-                <Nav.Link eventKey="sneakers">Meals</Nav.Link>
                 {this.props.isAuthenticated ? (
                   <>
-                    <Nav.Link eventKey="sold">Продані</Nav.Link>
+                    <Nav.Link eventKey="meals">Meals</Nav.Link>
                   </>
-                ) : null}
-                <LoginMenu></LoginMenu>
+                ) : (
+                  <>
+                    <Nav.Link eventKey="login">Sign in</Nav.Link>
+                    <Nav.Link eventKey="register">Register</Nav.Link>
+                  </>
+                )}
               </Nav>
             </Navbar.Collapse>
           </Navbar>
