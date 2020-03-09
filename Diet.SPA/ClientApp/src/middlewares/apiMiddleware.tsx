@@ -13,7 +13,11 @@ const getHeaders = () => {
 };
 
 export async function get<T>(url: string): Promise<T> {
-  return handleResponse(fetch(`${Config.apiUrl}/${url}`));
+  return handleResponse(
+    fetch(`${Config.apiUrl}/${url}`, {
+      headers: getHeaders()
+    })
+  );
 }
 
 export async function post<T>(url: string, model: T): Promise<any> {

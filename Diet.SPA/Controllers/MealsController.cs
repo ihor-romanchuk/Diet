@@ -52,7 +52,7 @@ namespace Diet.SPA.Controllers
             return NoContent();
         }
 
-        [HttpDelete("")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             await _mealsService.DeleteAsync(id);

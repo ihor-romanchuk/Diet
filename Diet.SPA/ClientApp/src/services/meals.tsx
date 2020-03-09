@@ -8,7 +8,7 @@ export async function getMeals(): Promise<MealDto[]> {
 }
 
 export async function getMeal(id: number): Promise<MealDto> {
-  return get(`${url}/id=${id}`);
+  return get(`${url}/${id}`);
 }
 
 export async function createMeal(meal: MealDto): Promise<void> {
@@ -16,9 +16,9 @@ export async function createMeal(meal: MealDto): Promise<void> {
 }
 
 export async function updateMeal(meal: MealDto): Promise<void> {
-  return put(`${url}/id=${meal.id}`, meal);
+  return put(`${url}/${meal.id}`, meal);
 }
 
 export async function deleteMeal(id: number): Promise<void> {
-  return del(`${url}/id=${id}`, {});
+  return del(`${url}/${id}`, {});
 }

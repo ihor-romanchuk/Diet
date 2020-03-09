@@ -10,7 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import en from "date-fns/locale/en-US";
 
-import { createMeal, updateMeal } from "../../services/meals";
+import { getMeal, createMeal, updateMeal } from "../../services/meals";
 
 import Router from "../../routing/router";
 
@@ -65,6 +65,23 @@ class AddEditMealPage extends Component<
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  componentDidMount() {
+    this.loadMeal();
+  }
+
+  loadMeal = async () => {
+    if (this.state.isEdit) {
+      let meal = await getMeal(this.state.meal.id);
+      this.setState({
+        meal: meal
+      });
+    }
+
+    this.setState({
+      isPageLoading: false
+    });
+  };
 
   async handleSubmit(event): Promise<void> {
     if (!this.state.isSaving) {
