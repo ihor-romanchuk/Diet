@@ -19,14 +19,12 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace Diet.SPA.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/account")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUserEntity> _userManager;
         private readonly SignInManager<ApplicationUserEntity> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        //private readonly IEmailSender _emailSender;
-        //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
 
@@ -34,16 +32,12 @@ namespace Diet.SPA.Controllers
             UserManager<ApplicationUserEntity> userManager,
             SignInManager<ApplicationUserEntity> signInManager,
             RoleManager<IdentityRole> roleManager,
-            //IEmailSender emailSender,
-            //ISmsSender smsSender,
             ILoggerFactory loggerFactory,
             IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
-            //_emailSender = emailSender;
-            //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
             _configuration = configuration;
         }

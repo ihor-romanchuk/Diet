@@ -9,7 +9,7 @@ namespace Diet.SPA.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/meals")]
     public class MealsController : ControllerBase
     {
         private readonly IMealsService _mealsService;
