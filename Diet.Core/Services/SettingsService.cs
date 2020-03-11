@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Diet.Core.Dtos;
 using Diet.Core.Services.Interfaces;
+using Diet.Database.Enums;
 
 namespace Diet.Core.Services
 {
@@ -13,7 +14,7 @@ namespace Diet.Core.Services
             throw new NotImplementedException();
         }
 
-        public Task<SettingDto> GetByIdAsync(int id)
+        public Task<SettingDto> GetByTypeAsync(SettingType type)
         {
             throw new NotImplementedException();
         }
@@ -28,7 +29,7 @@ namespace Diet.Core.Services
             throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(int id)
+        public Task DeleteAsync(SettingType type)
         {
             throw new NotImplementedException();
         }

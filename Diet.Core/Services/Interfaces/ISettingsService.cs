@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Diet.Core.Dtos;
+using Diet.Database.Enums;
 
 namespace Diet.Core.Services.Interfaces
 {
@@ -8,12 +9,12 @@ namespace Diet.Core.Services.Interfaces
     {
         Task<List<SettingDto>> GetAsync();
 
-        Task<SettingDto> GetByIdAsync(int id);
+        Task<SettingDto> GetByTypeAsync(SettingType type);
 
         Task CreateAsync(SettingDto settingDto);
 
         Task UpdateAsync(SettingDto settingDto);
 
-        Task DeleteAsync(int id);
+        Task DeleteAsync(SettingType type);
     }
 }

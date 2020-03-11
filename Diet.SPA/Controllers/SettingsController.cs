@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Diet.Core.Dtos;
 using Diet.Core.Services.Interfaces;
+using Diet.Database.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,10 +28,10 @@ namespace Diet.SPA.Controllers
             return result;
         }
 
-        [HttpGet("{id}")]
-        public async Task<SettingDto> Get(int id)
+        [HttpGet("{type}")]
+        public async Task<SettingDto> Get(SettingType type)
         {
-            SettingDto result = await _settingsService.GetByIdAsync(id);
+            SettingDto result = await _settingsService.GetByTypeAsync(type);
 
             return result;
         }
@@ -43,19 +44,19 @@ namespace Diet.SPA.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, [FromBody]SettingDto mealDto)
+        [HttpPut("{type}")]
+        public async Task<ActionResult> Update(SettingType type, [FromBody]SettingDto mealDto)
         {
-            mealDto.Id = id;
+            mealDto.Type = type;
             await _settingsService.UpdateAsync(mealDto);
 
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("{type}")]
+        public async Task<ActionResult> Delete(SettingType type)
         {
-            await _settingsService.DeleteAsync(id);
+            await _settingsService.DeleteAsync(type);
 
             return NoContent();
         }

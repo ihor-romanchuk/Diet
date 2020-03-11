@@ -54,6 +54,7 @@ class HeaderComponent extends Component<
                   <>
                     <Nav.Link eventKey="meals">Meals</Nav.Link>
                     <Nav.Link eventKey="settings">Settings</Nav.Link>
+                    <Nav.Link eventKey="users">Manage users</Nav.Link>
                     <Nav.Link eventKey="logout">Sign out</Nav.Link>
                   </>
                 ) : (

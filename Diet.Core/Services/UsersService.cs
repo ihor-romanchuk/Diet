@@ -67,11 +67,15 @@ namespace Diet.Core.Services
             if (userEntity == null)
                 throw new Exception("404");//todo
 
-            string token = await _userManager.GeneratePasswordResetTokenAsync(userEntity);
-            IdentityResult result = await _userManager.ResetPasswordAsync(userEntity, token, userDto.Password);
-            if(!result.Succeeded)
+            IdentityResult result;
+            if (!string.IsNullOrEmpty(userDto.Password))
             {
-                throw new Exception();//todo
+                string token = await _userManager.GeneratePasswordResetTokenAsync(userEntity);
+                result = await _userManager.ResetPasswordAsync(userEntity, token, userDto.Password);
+                if (!result.Succeeded)
+                {
+                    throw new Exception(); //todo
+                }
             }
 
             userEntity.UserName = userDto.Email;
