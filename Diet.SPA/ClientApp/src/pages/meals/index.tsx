@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { withRouter, RouteComponentProps } from "react-router";
-import Router from "../../routing/router";
+import _ from "lodash";
 import { Row, Col } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Card from "react-bootstrap/Card";
+
+import Router from "../../routing/router";
 
 import { getMeals } from "../../services/meals";
 import MealDto from "../../dtos/meal";
@@ -55,30 +57,46 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
             >
               Add meal
             </Button>
-            <div>Date: </div>
-            <div>Time: </div>
+            <div>Date range: </div>
+            <div>Time range: </div>
             <Row>
-              <Col xs={12} md={6}>
-                {this.state.meals.length ? (
-                  <Card className="text-center">
-                    <Card.Header>Day with meals</Card.Header>
-                    <Card.Body>
-                      {this.state.meals.map(meal => (
-                        <MealTileComponent
-                          meal={meal}
-                          onDelete={() =>
-                            this.setState(state => {
-                              return {
-                                meals: state.meals.filter(m => m !== meal)
-                              };
-                            })
-                          }
-                        ></MealTileComponent>
-                      ))}
-                    </Card.Body>
-                  </Card>
-                ) : null}
-              </Col>
+              {this.state.meals.length
+                ? _.chain(this.state.meals)
+                    .groupBy(m => m.dateTimeCreated.toLocaleDateString())
+                    .map((value, key) => ({
+                      key: key,
+                      content: (
+                        <Col key={key} className="mb-4" xs={12} md={6}>
+                          <Card className="text-center">
+                            <Card.Header>{key}</Card.Header>
+                            <Card.Body>
+                              {_.chain(value)
+                                .orderBy(meal => meal.dateTimeCreated.getTime())
+                                .map((meal, index) => (
+                                  <MealTileComponent
+                                    key={index}
+                                    meal={meal}
+                                    onDelete={() =>
+                                      this.setState(state => {
+                                        return {
+                                          meals: state.meals.filter(
+                                            m => m !== meal
+                                          )
+                                        };
+                                      })
+                                    }
+                                  ></MealTileComponent>
+                                ))
+                                .value()}
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      )
+                    }))
+                    .orderBy(p => p.key)
+                    .map(p => p.content)
+                    .value()
+                : null}
             </Row>
           </>
         )}

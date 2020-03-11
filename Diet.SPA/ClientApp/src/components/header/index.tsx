@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { AppState } from "../../redux/reducers/rootReducer";
+import { logout } from "../../redux/actions/userActions";
+import store from "../../redux/store";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 
@@ -26,20 +28,12 @@ class HeaderComponent extends Component<
 
   handleSelect = eventKey => {
     switch (eventKey) {
-      case "meals": {
-        Router.routes.meals.go();
-        break;
-      }
-      case "login": {
-        Router.routes.login.go();
-        break;
-      }
-      case "register": {
-        Router.routes.register.go();
+      case "logout": {
+        store.dispatch(logout());
         break;
       }
       default: {
-        //statements;
+        Router.routes[eventKey].go();
         break;
       }
     }
@@ -59,6 +53,8 @@ class HeaderComponent extends Component<
                 {this.props.isAuthenticated ? (
                   <>
                     <Nav.Link eventKey="meals">Meals</Nav.Link>
+                    <Nav.Link eventKey="settings">Settings</Nav.Link>
+                    <Nav.Link eventKey="logout">Sign out</Nav.Link>
                   </>
                 ) : (
                   <>

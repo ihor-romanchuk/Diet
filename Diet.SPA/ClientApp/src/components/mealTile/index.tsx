@@ -65,8 +65,10 @@ class MealTileComponent extends Component<
                 {this.props.meal.name}
               </Card.Title>
               <div className={styles.details}>
-                <span>{this.props.meal.calories} kkal</span>
-                <span>{this.props.meal.dateTimeCreated}</span>
+                <b>{this.props.meal.calories} kkal</b>
+                <span>
+                  {this.props.meal.dateTimeCreated.toLocaleTimeString()}
+                </span>
               </div>
             </Card.Body>
           </div>

@@ -15,6 +15,10 @@ export interface IReduxLoginAction extends IReduxBaseAction {
   token: string;
 }
 
+export interface IReduxLogoutAction extends IReduxBaseAction {
+  type: EReduxActionTypes.Logout;
+}
+
 export function restoreAuthentication(): ThunkAction<
   Promise<IReduxRestoreAuthenticationAction>,
   IReduxUserState,
@@ -55,5 +59,13 @@ export function login(
       token: jwt.token,
       isAuthenticated: !!jwt.token
     });
+  };
+}
+
+export function logout(): IReduxLogoutAction {
+  //todo: call to logout on API
+  sessionStorage.removeItem("token");
+  return {
+    type: EReduxActionTypes.Logout
   };
 }

@@ -3,7 +3,8 @@ import userReducer from "./userReducer";
 
 export enum EReduxActionTypes {
   RestoreAuthentication = "RestoreAuthentication",
-  Login = "Login"
+  Login = "Login",
+  Logout = "Logout"
 }
 
 export interface IReduxBaseAction {

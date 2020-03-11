@@ -9,6 +9,7 @@ namespace Diet.SPA
         public MapperProfile()
         {
             CreateMap<MealEntity, MealDto>().ReverseMap();
+            CreateMap<ApplicationUserEntity, UserDto>().ReverseMap();
         }
     }
 }

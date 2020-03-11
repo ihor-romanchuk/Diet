@@ -1,7 +1,8 @@
 import { EReduxActionTypes } from "./rootReducer";
 import {
   IReduxRestoreAuthenticationAction,
-  IReduxLoginAction
+  IReduxLoginAction,
+  IReduxLogoutAction
 } from "../actions/userActions";
 
 export interface IReduxUserState {
@@ -14,8 +15,10 @@ const initialState: IReduxUserState = {
   token: null
 };
 
-type TUserReducerActions = IReduxRestoreAuthenticationAction &
-  IReduxLoginAction;
+type TUserReducerActions =
+  | IReduxRestoreAuthenticationAction
+  | IReduxLoginAction
+  | IReduxLogoutAction;
 
 export default function(
   state: IReduxUserState = initialState,
@@ -33,6 +36,12 @@ export default function(
         ...state,
         isAuthenticated: action.isAuthenticated,
         token: action.token
+      };
+    case EReduxActionTypes.Logout:
+      return {
+        ...state,
+        isAuthenticated: false,
+        token: null
       };
     default:
       return state;

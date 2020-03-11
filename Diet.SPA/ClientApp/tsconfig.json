@@ -22,5 +22,5 @@
     "noUnusedLocals": true,
     "lib": ["dom", "dom.iterable", "esnext"]
   },
-  "include": ["src"]
+  "include": ["src", "src/dtos/jwt/.tsx"]
 }

@@ -1,4 +1,5 @@
 import Config from "../config";
+import { logout } from "../redux/actions/userActions";
 import store from "../redux/store";
 
 const getHeaders = () => {
@@ -52,11 +53,14 @@ export async function del<T>(url: string, model: T): Promise<any> {
 
 async function handleResponse<T>(promise: Promise<Response>): Promise<T> {
   //todo: add reject
-  return promise.then((response: Response) => {
-    if (response.status === 204) {
+  return promise.then(async (response: Response) => {
+    if (response.status === 401) {
+      store.dispatch(logout());
+      return null;
+    } else if (response.status === 204) {
       return null;
     } else {
-      return response.json();
+      return JSON.parse(await response.text());
     }
   });
 }

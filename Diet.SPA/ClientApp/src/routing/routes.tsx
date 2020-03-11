@@ -10,12 +10,9 @@ import AuthorizeRoute from "../authentication/authorizeRoute";
 
 const DefaultLayoutComponent = ({ component: Component, ...rest }) => {
   return (
-    <div>
-      <Header></Header>
-      <Body>
-        <Component {...rest} />
-      </Body>
-    </div>
+    <Body>
+      <Component {...rest} />
+    </Body>
   );
 };
 
@@ -53,16 +50,19 @@ const DefaultLayoutRoute = ({
 class Routes extends React.Component {
   public render() {
     return (
-      <Switch>
-        {Object.keys(Router.routes).map(key => (
-          <DefaultLayoutRoute key={key} {...Router.routes[key].props} />
-        ))}
-        <DefaultLayoutRoute
-          allowAnonymous={true}
-          componentProps={{}}
-          component={NotFound}
-        />
-      </Switch>
+      <>
+        <Header></Header>
+        <Switch>
+          {Object.keys(Router.routes).map(key => (
+            <DefaultLayoutRoute key={key} {...Router.routes[key].props} />
+          ))}
+          <DefaultLayoutRoute
+            allowAnonymous={true}
+            componentProps={{}}
+            component={NotFound}
+          />
+        </Switch>
+      </>
     );
   }
 }

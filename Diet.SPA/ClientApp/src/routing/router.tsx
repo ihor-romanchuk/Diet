@@ -6,6 +6,7 @@ import LoginPage from "../pages/login";
 import RegisterPage from "../pages/register";
 import MealsPage from "../pages/meals";
 import AddEditMealPage from "../pages/addEditMeal";
+import SettingsPage from "../pages/settings";
 
 interface CustomRouteProps extends RouteProps {
   allowAnonymous?: boolean;
@@ -81,6 +82,12 @@ class Router {
         path: "/meals/edit/:id",
         exact: true,
         component: AddEditMealPage,
+        allowAnonymous: false
+      }),
+      settings: new ParameterlessRoute({
+        path: "/settings",
+        exact: true,
+        component: SettingsPage,
         allowAnonymous: false
       }),
       login: new ParameterlessRoute({

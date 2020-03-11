@@ -20,7 +20,7 @@ namespace Diet.SPA.Controllers
         }
 
         [HttpGet("")]
-        public async Task<List<MealDto>> Get() //todo: remove id from MealDto
+        public async Task<List<MealDto>> Get()
         {
             List<MealDto> result = await _mealsService.GetAsync();
 

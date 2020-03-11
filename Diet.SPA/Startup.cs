@@ -97,6 +97,11 @@ namespace Diet.SPA
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             services.AddTransient<IMealsRepository, MealsRepository>();
             services.AddTransient<IMealsService, MealsService>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ISettingsService, SettingsService>();
+
+            services.TryAddScoped<UserManager<ApplicationUserEntity>>();
+            services.TryAddScoped<RoleManager<IdentityRole>>();
 
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
@@ -111,7 +116,7 @@ namespace Diet.SPA
                     In = ParameterLocation.Header,
                     Description = "Please insert JWT with Bearer into field",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
+                    Type = SecuritySchemeType.Http
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement

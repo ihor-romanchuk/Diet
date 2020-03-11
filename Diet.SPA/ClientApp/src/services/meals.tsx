@@ -4,11 +4,17 @@ import MealDto from "../dtos/meal";
 const url = "meals";
 
 export async function getMeals(): Promise<MealDto[]> {
-  return get(url);
+  let meals: MealDto[] = await get(url);
+  meals.forEach(meal => {
+    meal.dateTimeCreated = new Date(`${meal.dateTimeCreated}Z`);
+  });
+  return meals;
 }
 
 export async function getMeal(id: number): Promise<MealDto> {
-  return get(`${url}/${id}`);
+  let meal: MealDto = await get(`${url}/${id}`);
+  meal.dateTimeCreated = new Date(`${meal.dateTimeCreated}Z`);
+  return meal;
 }
 
 export async function createMeal(meal: MealDto): Promise<void> {
