@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -21,11 +23,26 @@ namespace Diet.Core.Services
             _mealsRepository = mealsRepository;
         }
 
-        public async Task<List<MealDto>> GetAsync()
+        public async Task<List<MealDto>> GetAsync(DateTime? startDate, DateTime? endDate, DateTime? startTime, DateTime? endTime)
         {
-            List<MealDto> meals = await _mealsRepository.Get().ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
 
-            return meals;
+            IQueryable<MealEntity> meals = _mealsRepository.Get();
+            if (startDate.HasValue)
+                meals = meals.Where(m => m.DateTimeCreated.Date >= startDate.Value.Date);
+
+            if (endDate.HasValue)
+                meals = meals.Where(m => m.DateTimeCreated.Date <= endDate.Value.Date);
+
+            if (startTime!= endTime)
+            {
+                if (startTime.HasValue)
+                    meals = meals.Where(m => m.DateTimeCreated.TimeOfDay >= startTime.Value.TimeOfDay);
+
+                if (endTime.HasValue)
+                    meals = meals.Where(m => m.DateTimeCreated.TimeOfDay <= endTime.Value.TimeOfDay);
+            }
+
+            return await meals.ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
         public async Task<MealDto> GetByIdAsync(int id)

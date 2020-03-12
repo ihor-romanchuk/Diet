@@ -1,0 +1,18 @@
+.container {
+  .filters {
+    overflow: visible;
+  }
+
+  .calendar {
+    display: block;
+  }
+
+  .filtersToggle {
+    display: flex;
+    justify-content: space-between;
+
+    .arrowBottom {
+      width: 20px;
+    }
+  }
+}
