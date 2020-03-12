@@ -16,7 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Diet.SPA.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [Route("api/account")]
     public class AccountController : Controller
     {
@@ -37,7 +37,6 @@ namespace Diet.SPA.Controllers
             _configuration = configuration;
         }
 
-        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<JwtDto> Login([FromBody] LoginDto model)
         {
@@ -53,7 +52,6 @@ namespace Diet.SPA.Controllers
             throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
         }
 
-        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<JwtDto> Register([FromBody] RegisterDto model)//todo: move code to separate service (AccountService)
         {

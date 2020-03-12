@@ -81,7 +81,7 @@ class SettingsPage extends Component<any, ISettingsPageState> {
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.map(e => {
+      data.errors.foreach(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
@@ -139,7 +139,7 @@ class SettingsPage extends Component<any, ISettingsPageState> {
               )
           );
 
-          Router.routes.users.go();
+          Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }

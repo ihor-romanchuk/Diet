@@ -39,6 +39,14 @@ class HeaderComponent extends Component<
     }
   };
 
+  renderLink(key: string, text: string) {
+    return Router.routes[key].props.allowedRoles.some(r =>
+      this.props.roles.includes(r)
+    ) ? (
+      <Nav.Link eventKey={key}>{text}</Nav.Link>
+    ) : null;
+  }
+
   render() {
     return (
       <div className={styles.container}>
@@ -52,9 +60,9 @@ class HeaderComponent extends Component<
               <Nav className="mr-auto" onSelect={this.handleSelect}>
                 {this.props.isAuthenticated ? (
                   <>
-                    <Nav.Link eventKey="meals">Meals</Nav.Link>
-                    <Nav.Link eventKey="settings">Settings</Nav.Link>
-                    <Nav.Link eventKey="users">Manage Users</Nav.Link>
+                    {this.renderLink("meals", "Meals")}
+                    {this.renderLink("settings", "Settings")}
+                    {this.renderLink("users", "Manage Users")}
                     <Nav.Link eventKey="logout">Sign out</Nav.Link>
                   </>
                 ) : (
@@ -73,7 +81,8 @@ class HeaderComponent extends Component<
 }
 
 const mapStateToProps = (state: AppState) => ({
-  isAuthenticated: state.userReducer.isAuthenticated
+  isAuthenticated: state.userReducer.isAuthenticated,
+  roles: state.userReducer.roles
 });
 
 export default connect(mapStateToProps)(HeaderComponent);

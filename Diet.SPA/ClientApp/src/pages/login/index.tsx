@@ -71,7 +71,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.map(e => {
+      data.errors.foreach(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });

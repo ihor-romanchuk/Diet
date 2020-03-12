@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Diet.Core;
 using Diet.Core.Dtos;
 using Diet.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diet.SPA.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = RolesConstants.Manager + "," + RolesConstants.Administrator)]
     [ApiController]
     [Route("api/users")]
     public class UsersController : ControllerBase

@@ -9,7 +9,9 @@ import Card from "react-bootstrap/Card";
 import Router from "../../routing/router";
 
 import { getMeals } from "../../services/meals";
+import { getSetting } from "../../services/settings";
 import MealDto from "../../dtos/meal";
+import SettingTypeEnum from "../../enums/settingType";
 
 import MealTileComponent from "../../components/mealTile";
 
@@ -18,6 +20,7 @@ import styles from "./index.module.scss";
 interface IMealsPageState {
   isPageLoading: boolean;
   meals: MealDto[];
+  caloriesPerDay: number;
 }
 
 class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
@@ -26,20 +29,39 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
 
     this.state = {
       isPageLoading: true,
-      meals: []
+      meals: [],
+      caloriesPerDay: null
     };
   }
 
   componentDidMount() {
-    this.loadMeals();
+    this.loadPageData();
   }
 
-  async loadMeals() {
+  loadPageData = async () => {
+    await Promise.all([this.loadMeals(), this.loadSettings()]);
+    this.setState({ isPageLoading: false });
+  };
+
+  async loadMeals(): Promise<void> {
     let meals = await getMeals();
     this.setState({
-      meals: meals,
-      isPageLoading: false
+      meals: meals
     });
+  }
+
+  async loadSettings(): Promise<void> {
+    let caloriesPerDaySetting = await getSetting(
+      SettingTypeEnum.CaloriesPerDay
+    );
+    let caloriesPerDay = null;
+    try {
+      caloriesPerDay = parseInt(caloriesPerDaySetting.value);
+
+      this.setState({
+        caloriesPerDay: caloriesPerDay
+      });
+    } catch (e) {}
   }
 
   render() {
@@ -63,36 +85,50 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
               {this.state.meals.length
                 ? _.chain(this.state.meals)
                     .groupBy(m => m.dateTimeCreated.toLocaleDateString())
-                    .map((value, key) => ({
-                      key: key,
-                      content: (
-                        <Col key={key} className="mb-4" xs={12} md={6}>
-                          <Card className="text-center">
-                            <Card.Header>{key}</Card.Header>
-                            <Card.Body>
-                              {_.chain(value)
-                                .orderBy(meal => meal.dateTimeCreated.getTime())
-                                .map((meal, index) => (
-                                  <MealTileComponent
-                                    key={index}
-                                    meal={meal}
-                                    onDelete={() =>
-                                      this.setState(state => {
-                                        return {
-                                          meals: state.meals.filter(
-                                            m => m !== meal
-                                          )
-                                        };
-                                      })
-                                    }
-                                  ></MealTileComponent>
-                                ))
-                                .value()}
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      )
-                    }))
+                    .map((value, key) => {
+                      let doesFitCaloriesLimit: boolean =
+                        _.chain(value)
+                          .sumBy(v => v.calories)
+                          .value() <= this.state.caloriesPerDay;
+                      let border: "success" | "danger" | null = this.state
+                        .caloriesPerDay
+                        ? doesFitCaloriesLimit
+                          ? "success"
+                          : "danger"
+                        : null;
+                      return {
+                        key: key,
+                        content: (
+                          <Col key={key} className="mb-4" xs={12} md={6}>
+                            <Card className="text-center" border={border}>
+                              <Card.Header>{key}</Card.Header>
+                              <Card.Body>
+                                {_.chain(value)
+                                  .orderBy(meal =>
+                                    meal.dateTimeCreated.getTime()
+                                  )
+                                  .map((meal, index) => (
+                                    <MealTileComponent
+                                      key={index}
+                                      meal={meal}
+                                      onDelete={() =>
+                                        this.setState(state => {
+                                          return {
+                                            meals: state.meals.filter(
+                                              m => m !== meal
+                                            )
+                                          };
+                                        })
+                                      }
+                                    ></MealTileComponent>
+                                  ))
+                                  .value()}
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        )
+                      };
+                    })
                     .orderBy(p => p.key)
                     .map(p => p.content)
                     .value()

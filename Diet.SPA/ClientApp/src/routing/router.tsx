@@ -10,8 +10,11 @@ import SettingsPage from "../pages/settings";
 import UsersPage from "../pages/users";
 import AddEditUserPage from "../pages/addEditUser";
 
+import RoleEnum from "../enums/role";
+
 interface CustomRouteProps extends RouteProps {
   allowAnonymous?: boolean;
+  allowedRoles?: RoleEnum[];
   componentProps?: any;
 }
 
@@ -72,43 +75,50 @@ class Router {
         path: "/",
         exact: true,
         component: MealsPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.User]
       }),
       addMeal: new ParameterlessRoute({
         path: "/meals/add",
         exact: true,
         component: AddEditMealPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.User]
       }),
       editMeal: new ParameterizedRoute<{ id: number }>({
         path: "/meals/edit/:id",
         exact: true,
         component: AddEditMealPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.User]
       }),
       settings: new ParameterlessRoute({
         path: "/settings",
         exact: true,
         component: SettingsPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.User]
       }),
       users: new ParameterlessRoute({
         path: "/users",
         exact: true,
         component: UsersPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.Manager]
       }),
       addUser: new ParameterlessRoute({
         path: "/users/add",
         exact: true,
         component: AddEditUserPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.Manager]
       }),
       editUser: new ParameterizedRoute<{ id: string }>({
         path: "/users/edit/:id",
         exact: true,
         component: AddEditUserPage,
-        allowAnonymous: false
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.Manager]
       }),
       login: new ParameterlessRoute({
         path: "/login",
