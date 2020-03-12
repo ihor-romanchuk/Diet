@@ -21,7 +21,7 @@ namespace Diet.Core.Helpers
             {
                 if (!await _roleManager.RoleExistsAsync(role))
                 {
-                    await _roleManager.CreateAsync(new IdentityRole { Name = RolesConstants.User });
+                    await _roleManager.CreateAsync(new IdentityRole { Name = role });
                 }
             }
         }

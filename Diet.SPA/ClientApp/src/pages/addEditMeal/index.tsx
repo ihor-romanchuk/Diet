@@ -10,6 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import en from "date-fns/locale/en-US";
 
+import MealDto from "../../dtos/meal";
 import { getMeal, createMeal, updateMeal } from "../../services/meals";
 
 import Router from "../../routing/router";
@@ -21,20 +22,13 @@ interface IRouteParams {
   id: string;
 }
 
-interface MealModel {
-  id?: number;
-  name: string;
-  calories: number;
-  dateTimeCreated: Date;
-}
-
 interface IAddEditMealPageState {
   isPageLoading: boolean;
   isSaving: boolean;
   isEdit: boolean;
   errorMessages: any;
   validated: boolean;
-  meal: MealModel;
+  meal: MealDto;
 }
 
 class AddEditMealPage extends Component<

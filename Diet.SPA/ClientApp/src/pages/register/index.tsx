@@ -18,6 +18,7 @@ interface IRegisterPageState {
   isLoading: boolean;
   email: string;
   password: string;
+  confirmPassword: string;
   errorMessages: any;
   validated: boolean;
 }
@@ -32,6 +33,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
       isLoading: false,
       email: "",
       password: "",
+      confirmPassword: "",
       errorMessages: {},
       validated: false
     };
@@ -115,6 +117,20 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
               onChange={event =>
                 this.setState({
                   password: event.target.value
+                })
+              }
+              required
+            />
+          </Form.Group>
+          <Form.Group as={Col} md={6}>
+            <Form.Label>Confirm password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password..."
+              value={this.state.password}
+              onChange={event =>
+                this.setState({
+                  confirmPassword: event.target.value
                 })
               }
               required

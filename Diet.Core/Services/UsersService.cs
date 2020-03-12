@@ -16,18 +16,21 @@ namespace Diet.Core.Services
     {
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUserEntity> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersService(IMapper mapper, UserManager<ApplicationUserEntity> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersService(IMapper mapper, UserManager<ApplicationUserEntity> userManager)
         {
             _mapper = mapper;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         public async Task<List<UserDto>> GetAsync()
         {
             List<UserDto> result = await _userManager.Users.OrderBy(u => u.UserName).ProjectTo<UserDto>(_mapper.ConfigurationProvider).ToListAsync();
+
+            foreach (UserDto userDto in result)
+            {
+                userDto.Roles = await _userManager.GetRolesAsync(new ApplicationUserEntity { Id = userDto.Id });
+            }
 
             return result;
         }
@@ -36,6 +39,8 @@ namespace Diet.Core.Services
         {
             UserDto result = await _userManager.Users.Where(u => u.Id == id)
                 .ProjectTo<UserDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+
+            result.Roles = await _userManager.GetRolesAsync(new ApplicationUserEntity { Id = result.Id });
 
             return result;
         }
