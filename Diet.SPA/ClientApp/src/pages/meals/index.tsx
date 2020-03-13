@@ -18,8 +18,13 @@ import SettingTypeEnum from "../../enums/settingType";
 
 import MealTileComponent from "../../components/mealTile";
 
+import { registerLocale } from "react-datepicker";
+import en from "date-fns/locale/en-US";
+
 import Images from "../../assets/images/images";
 import styles from "./index.module.scss";
+
+registerLocale("en-US", en);
 
 interface IFilters {
   startDate: Date;
@@ -46,8 +51,8 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
     this.state = {
       isPageLoading: true,
       filters: {
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: lastMidnight,
+        endDate: lastMidnight,
         startTime: lastMidnight,
         endTime: lastMidnight
       },
@@ -142,7 +147,7 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
                       <Form.Label>Start date:</Form.Label>
                       <DatePicker
                         locale="en-US"
-                        dateFormat="Pp"
+                        dateFormat="P"
                         className="form-control"
                         wrapperClassName={styles.calendar}
                         selected={this.state.filters.startDate}
@@ -163,7 +168,7 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
                       <Form.Label>End date:</Form.Label>
                       <DatePicker
                         locale="en-US"
-                        dateFormat="Pp"
+                        dateFormat="P"
                         className="form-control"
                         minDate={this.state.filters.startDate}
                         wrapperClassName={styles.calendar}

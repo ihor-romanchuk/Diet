@@ -10,10 +10,10 @@ export async function getMeals(
   endTime?: Date
 ): Promise<MealDto[]> {
   let queryParams: string[] = [];
-  if (startDate) queryParams.push(`startDate=${startDate.toUTCString()}`);
-  if (endDate) queryParams.push(`endDate=${endDate.toUTCString()}`);
-  if (startTime) queryParams.push(`startTime=${startTime.toUTCString()}`);
-  if (endTime) queryParams.push(`endTime=${endTime.toUTCString()}`);
+  if (startDate) queryParams.push(`startDate=${startDate.toISOString()}`);
+  if (endDate) queryParams.push(`endDate=${endDate.toISOString()}`);
+  if (startTime) queryParams.push(`startTime=${startTime.toISOString()}`);
+  if (endTime) queryParams.push(`endTime=${endTime.toISOString()}`);
 
   let actionUrl = `${url}${
     queryParams.length ? `?${queryParams.join("&")}` : ""

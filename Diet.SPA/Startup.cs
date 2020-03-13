@@ -11,6 +11,7 @@ using Diet.Core.Services;
 using Diet.Core.Services.Interfaces;
 using Diet.Database;
 using Diet.Database.Entities;
+using Diet.SPA.ModelBinders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -107,7 +108,11 @@ namespace Diet.SPA
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                );
+                )
+                .AddMvcOptions(options =>
+                {
+                    options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+                });
 
             services.AddSwaggerGen(c =>
             {

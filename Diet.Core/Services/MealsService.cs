@@ -28,18 +28,25 @@ namespace Diet.Core.Services
 
             IQueryable<MealEntity> meals = _mealsRepository.Get();
             if (startDate.HasValue)
-                meals = meals.Where(m => m.DateTimeCreated.Date >= startDate.Value.Date);
+                meals = meals.Where(m => m.DateTimeCreated >= startDate.Value);
 
             if (endDate.HasValue)
-                meals = meals.Where(m => m.DateTimeCreated.Date <= endDate.Value.Date);
+                meals = meals.Where(m => m.DateTimeCreated <= endDate.Value);
 
             if (startTime!= endTime)
             {
-                if (startTime.HasValue)
-                    meals = meals.Where(m => m.DateTimeCreated.TimeOfDay >= startTime.Value.TimeOfDay);
+                if(startTime.HasValue && endTime.HasValue && startTime.Value.Date < endTime.Value.Date)
+                {
+                    meals = meals.Where(m => m.DateTimeCreated.TimeOfDay >= startTime.Value.TimeOfDay || m.DateTimeCreated.TimeOfDay <= endTime.Value.TimeOfDay);
+                }
+                else
+                {
+                    if (startTime.HasValue)
+                        meals = meals.Where(m => m.DateTimeCreated.TimeOfDay >= startTime.Value.TimeOfDay);
 
-                if (endTime.HasValue)
-                    meals = meals.Where(m => m.DateTimeCreated.TimeOfDay <= endTime.Value.TimeOfDay);
+                    if (endTime.HasValue)
+                        meals = meals.Where(m => m.DateTimeCreated.TimeOfDay <= endTime.Value.TimeOfDay);
+                }
             }
 
             return await meals.ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
