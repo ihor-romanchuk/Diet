@@ -46,6 +46,7 @@ namespace Diet.SPA
 
             services.AddIdentityCore<ApplicationUserEntity>()
                 .AddRoles<IdentityRole>()
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddCors();

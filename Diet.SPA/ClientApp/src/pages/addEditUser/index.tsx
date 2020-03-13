@@ -22,6 +22,7 @@ interface IAddEditUserPageState {
   isPageLoading: boolean;
   isSaving: boolean;
   isEdit: boolean;
+  showPasswordInput: boolean;
   errorMessages: any;
   validated: boolean;
   user: UserDto;
@@ -35,11 +36,13 @@ class AddEditUserPage extends Component<
     super(props);
 
     let id: string = this.props.match.params.id;
+    let isEdit: boolean = !!id;
 
     this.state = {
       isPageLoading: true,
       isSaving: false,
-      isEdit: !!id,
+      isEdit: isEdit,
+      showPasswordInput: !isEdit,
       errorMessages: {},
       validated: false,
       user: {
@@ -180,21 +183,31 @@ class AddEditUserPage extends Component<
                   />
                 </Form.Group>
               </Form.Row>
-              {!this.state.isEdit ? (
-                <Form.Row>
-                  <Form.Group as={Col} xs={12} md={6}>
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      name="password"
-                      type="password"
-                      placeholder="Password..."
-                      value={this.state.user.password}
-                      onChange={this.handleInput}
-                      required
-                    />
-                  </Form.Group>
-                </Form.Row>
-              ) : null}
+              <Form.Row>
+                <Form.Group as={Col} xs={12} md={6}>
+                  {this.state.showPasswordInput ? (
+                    <>
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        name="password"
+                        type="password"
+                        autoComplete="off"
+                        placeholder="Password..."
+                        value={this.state.user.password}
+                        onChange={this.handleInput}
+                        required
+                      />
+                    </>
+                  ) : (
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => this.setState({ showPasswordInput: true })}
+                    >
+                      Change password
+                    </Button>
+                  )}
+                </Form.Group>
+              </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} xs={12} md={6}>
                   <Form.Label>Roles</Form.Label>
