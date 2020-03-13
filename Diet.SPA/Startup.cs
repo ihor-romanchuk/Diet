@@ -12,6 +12,7 @@ using Diet.Core.Services.Interfaces;
 using Diet.Database;
 using Diet.Database.Entities;
 using Diet.SPA.Filters;
+using Diet.SPA.Middlewares;
 using Diet.SPA.ModelBinders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -159,6 +160,7 @@ namespace Diet.SPA
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseRouting();
             
             app.UseCors(builder => builder

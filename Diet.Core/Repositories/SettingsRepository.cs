@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diet.Core.Repositories
 {
+    /// <inheritdoc />
     public class SettingsRepository: ISettingsRepository
     {
         private readonly IApplicationDbContext _dbContext;
@@ -20,16 +21,19 @@ namespace Diet.Core.Repositories
             _userHelper = userHelper;
         }
 
+        /// <inheritdoc />
         public IQueryable<SettingEntity> Get()
         {
             return _dbContext.Settings.Where(m => m.UserId == _userHelper.UserId);
         }
 
+        /// <inheritdoc />
         public async Task<SettingEntity> GetByTypeAsync(SettingType type)
         {
             return await _dbContext.Settings.FirstOrDefaultAsync(m => m.UserId == _userHelper.UserId && m.Type == type);
         }
 
+        /// <inheritdoc />
         public async Task CreateAsync(SettingEntity setting)
         {
             setting.UserId = _userHelper.UserId;
@@ -37,12 +41,14 @@ namespace Diet.Core.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(SettingEntity setting)
         {
             setting.UserId = _userHelper.UserId;
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task DeleteAsync(SettingEntity setting)
         {
             _dbContext.Remove(setting);
