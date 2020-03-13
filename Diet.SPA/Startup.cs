@@ -11,6 +11,7 @@ using Diet.Core.Services;
 using Diet.Core.Services.Interfaces;
 using Diet.Database;
 using Diet.Database.Entities;
+using Diet.SPA.Filters;
 using Diet.SPA.ModelBinders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -117,18 +118,14 @@ namespace Diet.SPA
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Diet API", Version = "v1" });
-                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
                 {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Please insert JWT with Bearer into field",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http
+                    Scheme = "bearer"
                 });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecurityScheme { Name = JwtBearerDefaults.AuthenticationScheme } , new string[] { } }
-                });
+                c.OperationFilter<AuthenticationRequirementsOperationFilter>();
             });
             services.AddSwaggerGenNewtonsoftSupport();
         }
