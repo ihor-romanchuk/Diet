@@ -9,6 +9,7 @@ export interface IReduxRestoreAuthenticationAction extends IReduxBaseAction {
   type: EReduxActionTypes.RestoreAuthentication;
   isAuthenticated: boolean;
   token: string;
+  email: string;
   roles: RoleEnum[];
 }
 
@@ -16,11 +17,17 @@ export interface IReduxLoginAction extends IReduxBaseAction {
   type: EReduxActionTypes.Login;
   isAuthenticated: boolean;
   token: string;
+  email: string;
   roles: RoleEnum[];
 }
 
 export interface IReduxLogoutAction extends IReduxBaseAction {
   type: EReduxActionTypes.Logout;
+}
+
+export interface IJwtClaims {
+  email: string;
+  roles: RoleEnum[];
 }
 
 export function restoreAuthentication(): ThunkAction<
@@ -37,11 +44,13 @@ export function restoreAuthentication(): ThunkAction<
     >
   ) => {
     const token: string = sessionStorage.getItem("token");
+    const claims = getClaims(token);
 
     return dispatch({
       type: EReduxActionTypes.RestoreAuthentication,
       token: token,
-      roles: getRolesFromJwt(token),
+      email: claims.email,
+      roles: claims.roles,
       isAuthenticated: !!token
     });
   };
@@ -59,36 +68,47 @@ export function login(
     dispatch: ThunkDispatch<IReduxUserState, undefined, IReduxLoginAction>
   ) => {
     sessionStorage.setItem("token", jwt.token);
+    const claims = getClaims(jwt.token);
 
     return dispatch({
       type: EReduxActionTypes.Login,
       token: jwt.token,
-      roles: getRolesFromJwt(jwt.token),
+      email: claims.email,
+      roles: claims.roles,
       isAuthenticated: !!jwt.token
     });
   };
 }
 
 export function logout(): IReduxLogoutAction {
-  //todo: call to logout on API
   sessionStorage.removeItem("token");
   return {
     type: EReduxActionTypes.Logout
   };
 }
 
-function getRolesFromJwt(token: string): RoleEnum[] {
-  let roles = [];
+function getClaims(token: string): IJwtClaims {
+  let claims: IJwtClaims = {
+    email: "",
+    roles: []
+  };
+
   try {
     const jwtDecoded: any = JwtDecode(token);
-    roles =
+
+    let email: string = jwtDecoded.sub;
+
+    let roles =
       jwtDecoded[
         "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
       ] || [];
     if (typeof roles === "string") {
       roles = [roles];
     }
+
+    claims.email = email;
+    claims.roles = roles;
   } catch (e) {}
 
-  return roles;
+  return claims;
 }

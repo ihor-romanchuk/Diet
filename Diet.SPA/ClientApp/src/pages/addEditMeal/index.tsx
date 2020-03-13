@@ -98,7 +98,7 @@ class AddEditMealPage extends Component<
             await createMeal(this.state.meal);
           }
 
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }

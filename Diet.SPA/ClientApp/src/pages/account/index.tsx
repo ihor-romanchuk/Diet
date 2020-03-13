@@ -1,55 +1,44 @@
 import React, { Component } from "react";
-import { withRouter, RouteComponentProps } from "react-router";
+import { connect } from "react-redux";
+import { AnyAction, Dispatch } from "redux";
+import { AppState } from "../../redux/reducers/rootReducer";
+import { logout } from "../../redux/actions/userActions";
 
 import { Col } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
-import RoleEnum from "../../enums/role";
-import UserDto from "../../dtos/user";
-import { getUser, createUser, updateUser } from "../../services/users";
-
-import Router from "../../routing/router";
+import IAccountDto from "../../dtos/account";
+import { update } from "../../services/account";
 
 import styles from "./index.module.scss";
 
-interface IRouteParams {
-  id: string;
-}
-
-interface IAddEditUserPageState {
+interface IAccountPageState {
   isPageLoading: boolean;
   isSaving: boolean;
-  isEdit: boolean;
   showPasswordInput: boolean;
   errorMessages: any;
   validated: boolean;
-  user: UserDto;
+  account: IAccountDto;
 }
 
-class AddEditUserPage extends Component<
-  RouteComponentProps<IRouteParams>,
-  IAddEditUserPageState
-> {
+type TAccountPageProps = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
+
+class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
   constructor(props: any) {
     super(props);
-
-    let id: string = this.props.match.params.id;
-    let isEdit: boolean = !!id;
 
     this.state = {
       isPageLoading: true,
       isSaving: false,
-      isEdit: isEdit,
-      showPasswordInput: !isEdit,
+      showPasswordInput: false,
       errorMessages: {},
       validated: false,
-      user: {
-        id: id,
-        email: "",
-        password: "",
-        roles: []
+      account: {
+        email: this.props.email,
+        password: ""
       }
     };
 
@@ -57,21 +46,10 @@ class AddEditUserPage extends Component<
   }
 
   componentDidMount() {
-    this.loadUser();
-  }
-
-  loadUser = async () => {
-    if (this.state.isEdit) {
-      let user = await getUser(this.state.user.id);
-      this.setState({
-        user: user
-      });
-    }
-
     this.setState({
       isPageLoading: false
     });
-  };
+  }
 
   async handleSubmit(event): Promise<void> {
     if (!this.state.isSaving) {
@@ -88,13 +66,9 @@ class AddEditUserPage extends Component<
             isSaving: true
           });
 
-          if (this.state.isEdit) {
-            await updateUser(this.state.user);
-          } else {
-            await createUser(this.state.user);
-          }
+          await update(this.state.account);
 
-          return Router.routes.users.go();
+          this.props.logout();
         } catch (e) {
           this.setInvalidState(e);
         }
@@ -121,46 +95,18 @@ class AddEditUserPage extends Component<
     const { name, value } = e.target;
 
     this.setState(state => ({
-      user: {
-        ...state.user,
+      account: {
+        ...state.account,
         [name]: value
       }
     }));
   };
 
-  handleRolesChange = (role: RoleEnum) => {
-    let { roles } = this.state.user;
-    if (roles.includes(role)) {
-      roles = roles.filter(r => r !== role);
-    } else {
-      roles.push(role);
-    }
-
-    this.setState(state => {
-      return { user: { ...state.user, roles: roles } };
-    });
-  };
-
   render() {
-    const userRoles = [
-      {
-        value: RoleEnum.User,
-        label: "User"
-      },
-      {
-        value: RoleEnum.Manager,
-        label: "Manager"
-      },
-      {
-        value: RoleEnum.Administrator,
-        label: "Administrator"
-      }
-    ];
-
     return (
       <div className={styles.container}>
-        <h2>{this.state.isEdit ? "Edit" : "Add"} user</h2>
-        {this.state.isEdit && this.state.isPageLoading ? (
+        <h2>Manage account</h2>
+        {this.state.isPageLoading ? (
           <Spinner animation="border" role="status" variant="success">
             <span className="sr-only">Loading...</span>
           </Spinner>
@@ -178,7 +124,7 @@ class AddEditUserPage extends Component<
                     name="email"
                     type="email"
                     placeholder="Email..."
-                    value={this.state.user.email}
+                    value={this.state.account.email}
                     onChange={this.handleInput}
                     required
                   />
@@ -194,7 +140,7 @@ class AddEditUserPage extends Component<
                         type="password"
                         autoComplete="off"
                         placeholder="Password..."
-                        value={this.state.user.password || ""}
+                        value={this.state.account.password}
                         onChange={this.handleInput}
                         required
                       />
@@ -207,23 +153,6 @@ class AddEditUserPage extends Component<
                       Change password
                     </Button>
                   )}
-                </Form.Group>
-              </Form.Row>
-              <Form.Row>
-                <Form.Group as={Col} xs={12} md={6}>
-                  <Form.Label>Roles</Form.Label>
-                  {userRoles.map((role, index) => {
-                    return (
-                      <Form.Check
-                        id={role.value.toString()}
-                        key={index}
-                        type="checkbox"
-                        label={role.label}
-                        checked={this.state.user.roles.includes(role.value)}
-                        onChange={() => this.handleRolesChange(role.value)}
-                      ></Form.Check>
-                    );
-                  })}
                 </Form.Group>
               </Form.Row>
               <Form.Row>
@@ -252,4 +181,14 @@ class AddEditUserPage extends Component<
   }
 }
 
-export default withRouter(AddEditUserPage);
+const mapStateToProps = (state: AppState) => ({
+  email: state.userReducer.email
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
+  return {
+    logout: () => dispatch(logout())
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AccountPage);

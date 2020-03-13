@@ -103,6 +103,8 @@ namespace Diet.SPA
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<ISettingsRepository, SettingsRepository>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IJwtService, JwtService>();
 
             services.TryAddScoped<UserManager<ApplicationUserEntity>>();
             services.TryAddScoped<RoleManager<IdentityRole>>();

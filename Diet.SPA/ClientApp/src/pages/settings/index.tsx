@@ -139,7 +139,7 @@ class SettingsPage extends Component<any, ISettingsPageState> {
               )
           );
 
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }

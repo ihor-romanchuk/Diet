@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { AnyAction, Dispatch } from "redux";
 import { AppState } from "../../redux/reducers/rootReducer";
 import { logout } from "../../redux/actions/userActions";
-import store from "../../redux/store";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 
@@ -11,25 +11,27 @@ import Images from "../../assets/images/images";
 
 import styles from "./index.module.scss";
 
-interface HeaderComponentState {
+interface IHeaderComponentState {
   selectedTab: string;
 }
+
+type THeaderComponentProps = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
+
 class HeaderComponent extends Component<
-  ReturnType<typeof mapStateToProps>,
-  HeaderComponentState
+  THeaderComponentProps,
+  IHeaderComponentState
 > {
-  constructor(props: ReturnType<typeof mapStateToProps>) {
+  constructor(props: THeaderComponentProps) {
     super(props);
 
     this.state = { selectedTab: "" };
   }
 
-  componentDidMount() {}
-
   handleSelect = eventKey => {
     switch (eventKey) {
       case "logout": {
-        store.dispatch(logout());
+        this.props.logout();
         break;
       }
       default: {
@@ -63,6 +65,7 @@ class HeaderComponent extends Component<
                     {this.renderLink("meals", "Meals")}
                     {this.renderLink("settings", "Settings")}
                     {this.renderLink("users", "Manage Users")}
+                    {this.renderLink("account", "Account")}
                     <Nav.Link eventKey="logout">Sign out</Nav.Link>
                   </>
                 ) : (
@@ -85,4 +88,10 @@ const mapStateToProps = (state: AppState) => ({
   roles: state.userReducer.roles
 });
 
-export default connect(mapStateToProps)(HeaderComponent);
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
+  return {
+    logout: () => dispatch(logout())
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderComponent);

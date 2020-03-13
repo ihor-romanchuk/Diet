@@ -58,7 +58,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
           });
 
           this.props.loginRedux(jwtDto);
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }

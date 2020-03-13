@@ -56,7 +56,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
           });
 
           this.props.loginRedux(jwtDto);
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }

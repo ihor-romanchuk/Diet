@@ -9,6 +9,7 @@ import AddEditMealPage from "../pages/addEditMeal";
 import SettingsPage from "../pages/settings";
 import UsersPage from "../pages/users";
 import AddEditUserPage from "../pages/addEditUser";
+import AccountPage from "../pages/account";
 
 import RoleEnum from "../enums/role";
 
@@ -131,6 +132,13 @@ class Router {
         exact: true,
         component: RegisterPage,
         allowAnonymous: true
+      }),
+      account: new ParameterlessRoute({
+        path: "/account",
+        exact: true,
+        component: AccountPage,
+        allowAnonymous: false,
+        allowedRoles: [RoleEnum.Administrator, RoleEnum.Manager, RoleEnum.User]
       })
     };
   }

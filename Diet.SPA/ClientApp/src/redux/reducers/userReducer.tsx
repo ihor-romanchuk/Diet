@@ -10,12 +10,14 @@ import RoleEnum from "../../enums/role";
 export interface IReduxUserState {
   isAuthenticated: boolean;
   token: string;
+  email: string;
   roles: RoleEnum[];
 }
 
 const initialState: IReduxUserState = {
   isAuthenticated: false,
   token: null,
+  email: "",
   roles: []
 };
 
@@ -34,6 +36,7 @@ export default function(
         ...state,
         isAuthenticated: action.isAuthenticated,
         token: action.token,
+        email: action.email,
         roles: action.roles
       };
     case EReduxActionTypes.Login:
@@ -41,14 +44,13 @@ export default function(
         ...state,
         isAuthenticated: action.isAuthenticated,
         token: action.token,
+        email: action.email,
         roles: action.roles
       };
     case EReduxActionTypes.Logout:
       return {
         ...state,
-        isAuthenticated: false,
-        token: null,
-        roles: []
+        ...initialState
       };
     default:
       return state;
