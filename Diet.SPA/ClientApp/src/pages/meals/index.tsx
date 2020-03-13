@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import { withRouter, RouteComponentProps } from "react-router";
+import { connect } from "react-redux";
+import { AnyAction, Dispatch } from "redux";
+import { AppState } from "../../redux/reducers/rootReducer";
 import _ from "lodash";
+
 import { Row, Col } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -8,6 +12,9 @@ import Spinner from "react-bootstrap/Spinner";
 import DatePicker from "react-datepicker";
 import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
+
+import { setMealFilters } from "../../redux/actions/mealActions";
+import { IFilters } from "../../redux/reducers/mealReducer";
 
 import Router from "../../routing/router";
 
@@ -26,13 +33,6 @@ import styles from "./index.module.scss";
 
 registerLocale("en-US", en);
 
-interface IFilters {
-  startDate: Date;
-  endDate: Date;
-  startTime: Date;
-  endTime: Date;
-}
-
 interface IMealsPageState {
   isPageLoading: boolean;
   filters: IFilters;
@@ -41,21 +41,17 @@ interface IMealsPageState {
   validated: boolean;
 }
 
-class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
-  constructor(props: RouteComponentProps) {
-    super(props);
+type TMealsPageProps = RouteComponentProps &
+  ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-    var lastMidnight = new Date();
-    lastMidnight.setHours(0, 0, 0, 0);
+class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
+  constructor(props: TMealsPageProps) {
+    super(props);
 
     this.state = {
       isPageLoading: true,
-      filters: {
-        startDate: lastMidnight,
-        endDate: lastMidnight,
-        startTime: lastMidnight,
-        endTime: lastMidnight
-      },
+      filters: this.props.filters || this.getDefaultFilters(),
       meals: [],
       caloriesPerDay: null,
       validated: false
@@ -65,6 +61,22 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
   componentDidMount() {
     this.loadPageData();
   }
+
+  componentWillUnmount() {
+    this.props.setMealFilters(this.state.filters);
+  }
+
+  getDefaultFilters = (): IFilters => {
+    var lastMidnight = new Date();
+    lastMidnight.setHours(0, 0, 0, 0);
+
+    return {
+      startDate: lastMidnight,
+      endDate: lastMidnight,
+      startTime: lastMidnight,
+      endTime: lastMidnight
+    };
+  };
 
   loadPageData = async () => {
     await Promise.all([this.loadMeals(), this.loadSettings()]);
@@ -116,6 +128,23 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
 
       this.setState({ isPageLoading: false });
     }
+  };
+
+  resetFilters = () => {
+    this.setState(
+      {
+        filters: this.getDefaultFilters()
+      },
+      async () => {
+        this.setState({
+          isPageLoading: true
+        });
+        await this.loadMeals();
+        this.setState({
+          isPageLoading: false
+        });
+      }
+    );
   };
 
   render() {
@@ -251,6 +280,14 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
                       >
                         Apply
                       </Button>
+                      <Button
+                        onClick={this.resetFilters}
+                        disabled={this.state.isPageLoading}
+                        variant="secondary"
+                        className="ml-2"
+                      >
+                        Reset
+                      </Button>
                     </Form.Group>
                   </Form.Row>
                 </Form>
@@ -335,4 +372,17 @@ class MealsPage extends Component<RouteComponentProps, IMealsPageState> {
   }
 }
 
-export default withRouter(MealsPage);
+const mapStateToProps = (state: AppState) => ({
+  filters: state.mealReducer.filters
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
+  return {
+    setMealFilters: (filters: IFilters) => dispatch(setMealFilters(filters))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(MealsPage));
