@@ -88,7 +88,6 @@ class AddEditMealPage extends Component<
       this.setState({ isSaving: true });
       event.preventDefault();
       event.stopPropagation();
-
       const form = event.currentTarget;
       if (form.checkValidity() === true) {
         this.setState({ validated: false });
@@ -162,6 +161,9 @@ class AddEditMealPage extends Component<
                   onChange={this.handleInput}
                   required
                 />
+                <Form.Control.Feedback type="invalid">
+                  Name couldn't be empty
+                </Form.Control.Feedback>
               </Form.Group>
             </Form.Row>
             <Form.Row>
@@ -177,6 +179,11 @@ class AddEditMealPage extends Component<
                   onChange={this.handleInput}
                   required
                 />
+                <Form.Control.Feedback type="invalid">
+                  {(this.state.errorMessages &&
+                    this.state.errorMessages["Calories"]) ||
+                    "You should specify number of calories"}
+                </Form.Control.Feedback>
               </Form.Group>
             </Form.Row>
             <Form.Row>
@@ -200,8 +207,9 @@ class AddEditMealPage extends Component<
                   required
                 />
                 <Form.Control.Feedback type="invalid">
-                  {this.state.errorMessages &&
-                    this.state.errorMessages["DateTimeCreated"]}
+                  {(this.state.errorMessages &&
+                    this.state.errorMessages["DateTimeCreated"]) ||
+                    "You should dpecify date"}
                 </Form.Control.Feedback>
               </Form.Group>
             </Form.Row>

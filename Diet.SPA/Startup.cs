@@ -11,10 +11,13 @@ using Diet.Core.Services;
 using Diet.Core.Services.Interfaces;
 using Diet.Database;
 using Diet.Database.Entities;
+using Diet.SPA.Filters;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -103,10 +106,22 @@ namespace Diet.SPA
             services.TryAddScoped<UserManager<ApplicationUserEntity>>();
             services.TryAddScoped<RoleManager<IdentityRole>>();
 
-            services.AddMvc()
+            services.AddMvc(op => {
+                op.Filters.Add<ValidationFilters>();
+            })
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                );
+                ).AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+                    fv.ImplicitlyValidateChildProperties = true;
+
+                });
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             services.AddSwaggerGen(c =>
             {
