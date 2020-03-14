@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Diet.Core.Dtos;
-using Diet.Core.Exceptions;
+using Diet.Core.ErrorHandling.Exceptions;
 using Diet.Core.Helpers.Interfaces;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
@@ -34,7 +34,7 @@ namespace Diet.Core.Services
                 }
             }
 
-            throw new BadRequestException("Incorrect email and/or password.");
+            throw new ValidationException("Incorrect email and/or password.");
         }
 
         /// <inheritdoc />
@@ -56,7 +56,7 @@ namespace Diet.Core.Services
                 }
             }
 
-            throw new BadRequestException(result.Errors);
+            throw new ValidationException(result.Errors);
         }
 
         /// <inheritdoc />
@@ -71,7 +71,7 @@ namespace Diet.Core.Services
                 result = await _userManager.ResetPasswordAsync(currentUserEntity, token, account.Password);
                 if (!result.Succeeded)
                 {
-                    throw new BadRequestException(result.Errors);
+                    throw new ValidationException("password", result.Errors);
                 }
             }
 
@@ -80,7 +80,7 @@ namespace Diet.Core.Services
             result = await _userManager.UpdateAsync(currentUserEntity);
             if (!result.Succeeded)
             {
-                throw new BadRequestException(result.Errors);
+                throw new ValidationException(result.Errors);
             }
         }
     }

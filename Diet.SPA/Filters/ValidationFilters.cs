@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Diet.Core.ErrorHandling.Exceptions;
+using Diet.Core.ErrorHandling.Models;
+using Diet.Core.Extensions;
 
 namespace Diet.SPA.Filters
 {
@@ -10,35 +12,25 @@ namespace Diet.SPA.Filters
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            if (!context.ModelState.IsValid)
+            if (context.ModelState.IsValid)
+            {
+                await next();
+            }
+            else
             {
                 var errorsInModelState = context.ModelState
                     .Where(x => x.Value.Errors.Count > 0)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(x => x.ErrorMessage)).ToArray();
 
-                var errorResponse = new ErrorResponse();
-
-                foreach (var error in errorsInModelState)
-                {
-                    foreach (var subError in error.Value)
+                List<ValidationErrorModel> errors = errorsInModelState.SelectMany(error => error.Value.Select(subError =>
+                    new ValidationErrorModel
                     {
-                        var errorModel = new ErrorModel
-                        {
-                            FieldName = error.Key,
-                            Message = subError
-                        };
+                        FieldName = error.Key.FromLowerCase(),
+                        Message = subError
+                    })).ToList();
 
-                        errorResponse.Errors.Add(errorModel);
-                    }
-                }
-
-                context.Result = new BadRequestObjectResult(errorResponse);
-                return;
+                throw new ValidationException(errors);
             }
-
-            await next();
-
-            // after controller
         }
     }
 }

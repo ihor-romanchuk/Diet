@@ -45,7 +45,7 @@ class SettingsPage extends Component<any, ISettingsPageState> {
       settings: [
         {
           type: SettingType.CaloriesPerDay,
-          value: null,
+          value: "",
           modificationState: ModificationState.Created
         }
       ]
@@ -183,11 +183,11 @@ class SettingsPage extends Component<any, ISettingsPageState> {
                     this.handleSettingChange(SettingType.CaloriesPerDay, e)
                   }
                   required
-                  isInvalid={this.state.errorMessages["CaloriesPerDay"]}
+                  isInvalid={this.state.errorMessages["caloriesPerDay"]}
                 />
                 <Form.Control.Feedback type="invalid">
                   {(this.state.errorMessages &&
-                    this.state.errorMessages["CaloriesPerDay"]) ||
+                    this.state.errorMessages["caloriesPerDay"]) ||
                     caloriesPerDayValidationErrorMessage}
                 </Form.Control.Feedback>
               </Form.Group>

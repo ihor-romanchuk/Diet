@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Diet.Core.Exceptions;
+using Diet.Core.ErrorHandling.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Diet.SPA.Middlewares
 {
@@ -28,17 +29,35 @@ namespace Diet.SPA.Middlewares
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var code = HttpStatusCode.InternalServerError; 
-            if (ex is NotFoundException) code = HttpStatusCode.NotFound;
-            if (ex is BadRequestException) code = HttpStatusCode.BadRequest;
+            var statusCode = HttpStatusCode.InternalServerError;
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            var responseContent = JsonConvert.SerializeObject(new { Message = "Unexpected error occured" }, serializerSettings);
 
-            var result = JsonConvert.SerializeObject(new { error = ex.Message });
+            if (exception is NotFoundException)
+            {
+                statusCode = HttpStatusCode.NotFound;
+                responseContent = JsonConvert.SerializeObject(new
+                {
+                    exception.Message
+                }, serializerSettings);
+            }
+            else if (exception is ValidationException validationException)
+            {
+                statusCode = HttpStatusCode.BadRequest;
+                responseContent = JsonConvert.SerializeObject(new
+                {
+                    validationException.Message,
+                    validationException.Errors
+                }, serializerSettings);
+            }
+
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)code;
+            context.Response.StatusCode = (int)statusCode;
 
-            return context.Response.WriteAsync(result);
+            return context.Response.WriteAsync(responseContent);
         }
     }
 }

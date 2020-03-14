@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
-using Diet.Core.Exceptions;
+using Diet.Core.ErrorHandling.Exceptions;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -69,7 +69,7 @@ namespace Diet.Core.Services
                 }
             }
 
-            throw new BadRequestException(result.Errors);
+            throw new ValidationException(result.Errors);
         }
 
         /// <inheritdoc />
@@ -86,7 +86,7 @@ namespace Diet.Core.Services
                 result = await _userManager.ResetPasswordAsync(userEntity, token, userDto.Password);
                 if (!result.Succeeded)
                 {
-                    throw new BadRequestException(result.Errors);
+                    throw new ValidationException("password", result.Errors);
                 }
             }
 
@@ -95,7 +95,7 @@ namespace Diet.Core.Services
             result = await _userManager.UpdateAsync(userEntity);
             if (!result.Succeeded)
             {
-                throw new BadRequestException(result.Errors);
+                throw new ValidationException("email", result.Errors);
             }
 
             IList<string> existingRoles = await _userManager.GetRolesAsync(userEntity);
@@ -104,12 +104,12 @@ namespace Diet.Core.Services
             result = await _userManager.RemoveFromRolesAsync(userEntity, rolesToRemove);
             if (!result.Succeeded)
             {
-                throw new BadRequestException(result.Errors);
+                throw new ValidationException("roles", result.Errors);
             }
             result = await _userManager.AddToRolesAsync(userEntity, rolesToAdd);
             if (!result.Succeeded)
             {
-                throw new BadRequestException(result.Errors);
+                throw new ValidationException("roles", result.Errors);
             }
         }
 

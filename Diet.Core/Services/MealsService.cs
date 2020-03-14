@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
-using Diet.Core.Exceptions;
+using Diet.Core.ErrorHandling.Exceptions;
 using Diet.Core.Repositories.Interfaces;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;

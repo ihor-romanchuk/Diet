@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Diet.Core.Dtos;
-using Diet.Core.Exceptions;
+using Diet.Core.ErrorHandling.Exceptions;
 using Diet.Core.Helpers.Interfaces;
 using Diet.Core.Services;
 using Diet.Core.Services.Interfaces;
@@ -39,7 +39,7 @@ namespace Diet.Core.Tests.Services
                 Password = "password"
             };
 
-            Assert.ThrowsAsync<BadRequestException>(async () => { await _accountService.Login(loginDto); });
+            Assert.ThrowsAsync<ValidationException>(async () => { await _accountService.Login(loginDto); });
             _userManagerMock.Verify(p => p.FindByNameAsync(loginDto.Email), Times.Once);
             _userManagerMock.Verify(p => p.FindByEmailAsync(loginDto.Email), Times.Once);
         }
@@ -60,7 +60,7 @@ namespace Diet.Core.Tests.Services
             _userManagerMock.Setup(p => p.FindByNameAsync(loginDto.Email))
                 .ReturnsAsync(userEntity);
 
-            Assert.ThrowsAsync<BadRequestException>(async () => { await _accountService.Login(loginDto); });
+            Assert.ThrowsAsync<ValidationException>(async () => { await _accountService.Login(loginDto); });
             _userManagerMock.Verify(p => p.FindByNameAsync(loginDto.Email), Times.Once);
             _userManagerMock.Verify(p => p.CheckPasswordAsync(userEntity, loginDto.Password), Times.Once);
         }

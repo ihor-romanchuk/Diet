@@ -114,7 +114,6 @@ class AddEditMealPage extends Component<
   }
 
   setInvalidState(data) {
-    //todo
     if (data.errors && data.errors.length > 0) {
       data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
@@ -158,7 +157,7 @@ class AddEditMealPage extends Component<
                   value={this.state.meal.name}
                   onChange={this.handleInput}
                   required
-                  isInvalid={this.state.errorMessages["Name"]}
+                  isInvalid={this.state.errorMessages["name"]}
                 />
                 <Form.Control.Feedback type="invalid">
                   {nameValidationErrorMessage}
@@ -177,11 +176,11 @@ class AddEditMealPage extends Component<
                   value={(this.state.meal.calories || "").toString()}
                   onChange={this.handleInput}
                   required
-                  isInvalid={this.state.errorMessages["Calories"]}
+                  isInvalid={this.state.errorMessages["calories"]}
                 />
                 <Form.Control.Feedback type="invalid">
                   {(this.state.errorMessages &&
-                    this.state.errorMessages["Calories"]) ||
+                    this.state.errorMessages["calories"]) ||
                     caloriesValidationErrorMessage}
                 </Form.Control.Feedback>
               </Form.Group>
@@ -208,7 +207,7 @@ class AddEditMealPage extends Component<
                 />
                 <Form.Control.Feedback type="invalid">
                   {(this.state.errorMessages &&
-                    this.state.errorMessages["DateTimeCreated"]) ||
+                    this.state.errorMessages["dateTimeCreated"]) ||
                     "You should dpecify date"}
                 </Form.Control.Feedback>
               </Form.Group>
