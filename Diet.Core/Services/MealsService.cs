@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
+using Diet.Core.Exceptions;
 using Diet.Core.Repositories.Interfaces;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
@@ -54,8 +55,11 @@ namespace Diet.Core.Services
 
         public async Task<MealDto> GetByIdAsync(int id)
         {
-            var result = _mapper.Map<MealDto>(await _mealsRepository.GetByIdAsync(id));
+            MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);
+            if(mealEntity == null)
+                throw new NotFoundException();
 
+            var result = _mapper.Map<MealDto>(mealEntity);
             return result;
         }
 
@@ -76,23 +80,21 @@ namespace Diet.Core.Services
                 mealEntity = await _mealsRepository.GetByIdAsync(mealDto.Id);
             }
 
-            //todo: throw not found exception
-            if (mealEntity != null)
-            {
-                _mapper.Map(mealDto, mealEntity);
-                await _mealsRepository.UpdateAsync(mealEntity);
-            }
+            if(mealEntity == null)
+                throw new NotFoundException();
+
+            _mapper.Map(mealDto, mealEntity);
+            await _mealsRepository.UpdateAsync(mealEntity);
         }
 
         public async Task DeleteAsync(int id)
         {
             MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);
 
-            //todo: throw NotFoundException
-            if(mealEntity != null)
-            {
-                await _mealsRepository.DeleteAsync(mealEntity);
-            }
+            if (mealEntity == null)
+                throw new NotFoundException();
+
+            await _mealsRepository.DeleteAsync(mealEntity);
         }
     }
 }

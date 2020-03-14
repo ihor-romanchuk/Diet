@@ -56,7 +56,7 @@ class UsersPage extends Component<any, IUsersPageState> {
           </Spinner>
         ) : (
           <>
-            <h1>Users</h1>
+            <h2>Users</h2>
             <Button
               variant="success"
               onClick={() => Router.routes.addUser.go()}

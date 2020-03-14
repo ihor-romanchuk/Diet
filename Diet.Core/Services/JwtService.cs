@@ -4,39 +4,41 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Diet.Core.Configuration;
 using Diet.Core.Dtos;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Diet.Core.Services
 {
-    public class JwtService: IJwtService
+    public class JwtService : IJwtService
     {
         private readonly UserManager<ApplicationUserEntity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly IOptions<JwtSettings> _jwtSettings;
 
-        public JwtService(UserManager<ApplicationUserEntity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public JwtService(UserManager<ApplicationUserEntity> userManager,
+            RoleManager<IdentityRole> roleManager, IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _configuration = configuration;
+            _jwtSettings = jwtSettings;
         }
 
         public async Task<JwtDto> GenerateJwtAsync(ApplicationUserEntity user)
         {
             List<Claim> claims = await GetClaimsAsync(user);
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Value.Key));
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expirationDate = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+            var expirationDate = DateTime.Now.AddSeconds(_jwtSettings.Value.ExpireSeconds);
 
             var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtIssuer"],
+                _jwtSettings.Value.Issuer,
+                _jwtSettings.Value.Issuer,
                 claims,
                 expires: expirationDate,
                 signingCredentials: signingCredentials

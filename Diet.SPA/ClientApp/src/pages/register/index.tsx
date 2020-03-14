@@ -84,7 +84,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
   render() {
     return (
       <div className={styles.container}>
-        <h1>Register</h1>
+        <h2>Register</h2>
         <Form
           noValidate
           validated={this.state.validated}

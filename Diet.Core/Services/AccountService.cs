@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Diet.Core.Dtos;
+using Diet.Core.Exceptions;
 using Diet.Core.Helpers.Interfaces;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
@@ -32,7 +34,7 @@ namespace Diet.Core.Services
                 }
             }
 
-            throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
+            throw new BadRequestException("Incorrect email and/or password.");
         }
 
         public async Task<JwtDto> Register(RegisterDto model)
@@ -53,7 +55,7 @@ namespace Diet.Core.Services
                 }
             }
 
-            throw new Exception();//todo
+            throw new BadRequestException(result.Errors);
         }
 
         public async Task UpdateAccountInfoAsync(AccountDto account)
@@ -67,7 +69,7 @@ namespace Diet.Core.Services
                 result = await _userManager.ResetPasswordAsync(currentUserEntity, token, account.Password);
                 if (!result.Succeeded)
                 {
-                    throw new Exception(); //todo
+                    throw new BadRequestException(result.Errors);
                 }
             }
 
@@ -76,7 +78,7 @@ namespace Diet.Core.Services
             result = await _userManager.UpdateAsync(currentUserEntity);
             if (!result.Succeeded)
             {
-                throw new Exception();//todo
+                throw new BadRequestException(result.Errors);
             }
         }
     }

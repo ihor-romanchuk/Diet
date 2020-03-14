@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
+using Diet.Core.Exceptions;
 using Diet.Core.Repositories.Interfaces;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
@@ -32,8 +33,12 @@ namespace Diet.Core.Services
 
         public async Task<SettingDto> GetByTypeAsync(SettingType type)
         {
-            var result = _mapper.Map<SettingDto>(await _settingsRepository.GetByTypeAsync(type));
+            SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(type);
+            if(settingEntity == null)
+                throw new NotFoundException();
 
+
+            var result = _mapper.Map<SettingDto>(await _settingsRepository.GetByTypeAsync(type));
             return result;
         }
 
@@ -48,23 +53,21 @@ namespace Diet.Core.Services
         {
             SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(settingDto.Type);
 
-            //todo: throw not found exception
-            if (settingEntity != null)
-            {
-                _mapper.Map(settingDto, settingEntity);
-                await _settingsRepository.UpdateAsync(settingEntity);
-            }
+            if (settingEntity == null)
+                throw new NotFoundException();
+
+            _mapper.Map(settingDto, settingEntity);
+            await _settingsRepository.UpdateAsync(settingEntity);
         }
 
         public async Task DeleteAsync(SettingType type)
         {
             SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(type);
 
-            //todo: throw NotFoundException
-            if (settingEntity != null)
-            {
-                await _settingsRepository.DeleteAsync(settingEntity);
-            }
+            if (settingEntity == null)
+                throw new NotFoundException();
+
+            await _settingsRepository.DeleteAsync(settingEntity);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
+using Diet.Core.Exceptions;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -37,12 +38,14 @@ namespace Diet.Core.Services
 
         public async Task<UserDto> GetByIdAsync(string id)
         {
-            UserDto result = await _userManager.Users.Where(u => u.Id == id)
+            UserDto user = await _userManager.Users.Where(u => u.Id == id)
                 .ProjectTo<UserDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+            if(user == null)
+                throw new NotFoundException();
 
-            result.Roles = await _userManager.GetRolesAsync(new ApplicationUserEntity { Id = result.Id });
+            user.Roles = await _userManager.GetRolesAsync(new ApplicationUserEntity { Id = user.Id });
 
-            return result;
+            return user;
         }
 
         public async Task CreateAsync(UserDto userDto)
@@ -63,14 +66,14 @@ namespace Diet.Core.Services
                 }
             }
 
-            throw new ApplicationException("UNKNOWN_ERROR");//todo
+            throw new BadRequestException(result.Errors);
         }
 
         public async Task UpdateAsync(UserDto userDto)
         {
             ApplicationUserEntity userEntity = await _userManager.FindByIdAsync(userDto.Id);
             if (userEntity == null)
-                throw new Exception("404");//todo
+                throw new NotFoundException();
 
             IdentityResult result;
             if (!string.IsNullOrEmpty(userDto.Password))
@@ -79,7 +82,7 @@ namespace Diet.Core.Services
                 result = await _userManager.ResetPasswordAsync(userEntity, token, userDto.Password);
                 if (!result.Succeeded)
                 {
-                    throw new Exception(); //todo
+                    throw new BadRequestException(result.Errors);
                 }
             }
 
@@ -88,7 +91,7 @@ namespace Diet.Core.Services
             result = await _userManager.UpdateAsync(userEntity);
             if (!result.Succeeded)
             {
-                throw new Exception();//todo
+                throw new BadRequestException(result.Errors);
             }
 
             IList<string> existingRoles = await _userManager.GetRolesAsync(userEntity);
@@ -97,12 +100,12 @@ namespace Diet.Core.Services
             result = await _userManager.RemoveFromRolesAsync(userEntity, rolesToRemove);
             if (!result.Succeeded)
             {
-                throw new Exception();//todo
+                throw new BadRequestException(result.Errors);
             }
             result = await _userManager.AddToRolesAsync(userEntity, rolesToAdd);
             if (!result.Succeeded)
             {
-                throw new Exception();//todo
+                throw new BadRequestException(result.Errors);
             }
         }
 
@@ -110,7 +113,8 @@ namespace Diet.Core.Services
         {
             ApplicationUserEntity userEntity = await _userManager.FindByIdAsync(id);
             if(userEntity == null)
-                throw new Exception("404");//todo
+                throw new NotFoundException();
+
             await _userManager.DeleteAsync(userEntity);
         }
     }

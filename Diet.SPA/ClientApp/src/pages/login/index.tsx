@@ -82,7 +82,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
   render() {
     return (
       <div className={styles.container}>
-        <h1>Sign in</h1>
+        <h2>Sign in</h2>
         <Form
           noValidate
           validated={this.state.validated}

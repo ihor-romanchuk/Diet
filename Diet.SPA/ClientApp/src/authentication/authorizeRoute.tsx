@@ -18,6 +18,7 @@ class AuthorizeRoute extends Component<
       allowedRoles,
       ...rest
     } = this.props;
+
     if (isAuthenticated) {
       if (allowedRoles.some(r => this.props.roles.includes(r))) {
         return (

@@ -31,21 +31,14 @@ namespace Diet.SPA.Controllers
         [HttpPost("register")]
         public async Task<JwtDto> Register([FromBody] RegisterDto model)
         {
-            //todo: add validation
-            if (ModelState.IsValid)
-            {
-                JwtDto result = await _accountService.Register(model);
+            JwtDto result = await _accountService.Register(model);
 
-                return result;
-            }
-
-            throw new ApplicationException("UNKNOWN_ERROR");//todo
+            return result;
         }
 
         [HttpPost("")]
         public async Task<ActionResult> UpdateAccountInfo([FromBody] AccountDto account)
         {
-            //todo: validation
             await _accountService.UpdateAccountInfoAsync(account);
             return NoContent();
         }
