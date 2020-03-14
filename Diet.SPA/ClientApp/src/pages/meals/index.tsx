@@ -67,12 +67,14 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
   }
 
   getDefaultFilters = (): IFilters => {
-    var lastMidnight = new Date();
+    let lastMidnight = new Date();
     lastMidnight.setHours(0, 0, 0, 0);
+    let nextMidnight = new Date();
+    nextMidnight.setHours(24, 0, 0, 0);
 
     return {
       startDate: lastMidnight,
-      endDate: lastMidnight,
+      endDate: nextMidnight,
       startTime: lastMidnight,
       endTime: lastMidnight
     };
