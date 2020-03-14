@@ -18,6 +18,9 @@ import Router from "../../routing/router";
 import styles from "./index.module.scss";
 registerLocale("en-US", en);
 
+const nameValidationErrorMessage = "Meal name can't be empty";
+const caloriesValidationErrorMessage = "You should specify number of calories";
+
 interface IRouteParams {
   id: string;
 }
@@ -80,6 +83,7 @@ class AddEditMealPage extends Component<
   async handleSubmit(event): Promise<void> {
     if (!this.state.isSaving) {
       this.setState({ isSaving: true });
+      this.setState({ errorMessages: [] });
       event.preventDefault();
       event.stopPropagation();
       const form = event.currentTarget;
@@ -112,7 +116,7 @@ class AddEditMealPage extends Component<
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.foreach(e => {
+      data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
@@ -154,9 +158,10 @@ class AddEditMealPage extends Component<
                   value={this.state.meal.name}
                   onChange={this.handleInput}
                   required
+                  isInvalid={this.state.errorMessages["Name"]}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Name couldn't be empty
+                  {nameValidationErrorMessage}
                 </Form.Control.Feedback>
               </Form.Group>
             </Form.Row>
@@ -172,11 +177,12 @@ class AddEditMealPage extends Component<
                   value={(this.state.meal.calories || "").toString()}
                   onChange={this.handleInput}
                   required
+                  isInvalid={this.state.errorMessages["Calories"]}
                 />
                 <Form.Control.Feedback type="invalid">
                   {(this.state.errorMessages &&
                     this.state.errorMessages["Calories"]) ||
-                    "You should specify number of calories"}
+                    caloriesValidationErrorMessage}
                 </Form.Control.Feedback>
               </Form.Group>
             </Form.Row>

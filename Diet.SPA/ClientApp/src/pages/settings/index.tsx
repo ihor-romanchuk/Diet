@@ -17,6 +17,8 @@ import Router from "../../routing/router";
 
 import styles from "./index.module.scss";
 
+const caloriesPerDayValidationErrorMessage = "Value can't be empty";
+
 interface ISettingModel {
   type: SettingType;
   value: string;
@@ -81,7 +83,7 @@ class SettingsPage extends Component<any, ISettingsPageState> {
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.foreach(e => {
+      data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
@@ -181,7 +183,13 @@ class SettingsPage extends Component<any, ISettingsPageState> {
                     this.handleSettingChange(SettingType.CaloriesPerDay, e)
                   }
                   required
+                  isInvalid={this.state.errorMessages["CaloriesPerDay"]}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {(this.state.errorMessages &&
+                    this.state.errorMessages["CaloriesPerDay"]) ||
+                    caloriesPerDayValidationErrorMessage}
+                </Form.Control.Feedback>
               </Form.Group>
             </Form.Row>
             <Form.Row>
