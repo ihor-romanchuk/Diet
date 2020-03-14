@@ -96,11 +96,12 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
   };
 
   loadSettings = async (): Promise<void> => {
-    let caloriesPerDaySetting = await getSetting(
-      SettingTypeEnum.CaloriesPerDay
-    );
-    let caloriesPerDay = null;
     try {
+      let caloriesPerDaySetting = await getSetting(
+        SettingTypeEnum.CaloriesPerDay
+      );
+      let caloriesPerDay = null;
+
       caloriesPerDay = parseInt(caloriesPerDaySetting.value);
 
       this.setState({

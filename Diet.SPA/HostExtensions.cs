@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Diet.Core.Helpers;
 using Diet.Core.Helpers.Interfaces;
 using Diet.Database;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
