@@ -1,5 +1,5 @@
-import React from "react";
-import { Component } from "react";
+import React, { Component } from "react";
+import { Redirect } from "react-router";
 import { connect } from "react-redux";
 import { AppState } from "../redux/reducers/rootReducer";
 import { Route } from "react-router-dom";
@@ -35,16 +35,19 @@ class AuthorizeRoute extends Component<
             [RoleEnum.Administrator, RoleEnum.User].includes(r)
           )
         ) {
-          Router.routes.meals.go();
+          return (
+            <Redirect to={Router.routes.meals.props.path as string}></Redirect>
+          );
         } else {
-          Router.routes.users.go();
+          return (
+            <Redirect to={Router.routes.users.props.path as string}></Redirect>
+          );
         }
-
-        return null;
       }
     } else {
-      Router.routes.login.go();
-      return null;
+      return (
+        <Redirect to={Router.routes.login.props.path as string}></Redirect>
+      );
     }
   }
 }

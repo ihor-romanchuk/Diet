@@ -90,5 +90,28 @@ namespace Diet.Core.Tests.Services
             _userManagerMock.Verify(p => p.CheckPasswordAsync(userEntity, loginDto.Password), Times.Once);
             _jwtServiceMock.Verify(p => p.GenerateJwtAsync(userEntity), Times.Once);
         }
+
+        [Test]
+        public async Task Register_UserAndPasswordAreValid_GeneratesJwt()
+        {
+            var registerDto = new RegisterDto
+            {
+                Email = "email",
+                Password = "password"
+            };
+            
+            var expectedResult = new JwtDto();
+
+            _userManagerMock.Setup(p =>
+                    p.CreateAsync(It.Is<ApplicationUserEntity>(u => u.Email == registerDto.Email && u.UserName == registerDto.Email), registerDto.Password))
+                .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock.Setup(p =>
+                p.AddToRoleAsync(It.Is<ApplicationUserEntity>(u => u.Email == registerDto.Email && u.UserName == registerDto.Email), RolesConstants.User))
+                .ReturnsAsync(IdentityResult.Success);
+            _jwtServiceMock.Setup(p => p.GenerateJwtAsync(It.Is<ApplicationUserEntity>(u => u.Email == registerDto.Email && u.UserName == registerDto.Email))).ReturnsAsync(expectedResult);
+
+            JwtDto actualResult = await _accountService.Register(registerDto);
+            Assert.AreEqual(expectedResult, actualResult);
+        }
     }
 }

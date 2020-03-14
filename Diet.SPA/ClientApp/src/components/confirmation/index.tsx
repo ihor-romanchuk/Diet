@@ -31,13 +31,8 @@ class ConfirmationComponent extends Component<
   }
 
   handleAction() {
-    if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
-      this.props.action().then(() => {
-        this.setState({ isLoading: false });
-        this.props.onHide();
-      });
-    }
+    this.props.onHide();
+    this.props.action();
   }
 
   render() {
