@@ -109,7 +109,7 @@ class AddEditUserPage extends Component<
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.foreach(e => {
+      data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
@@ -184,7 +184,7 @@ class AddEditUserPage extends Component<
                     isInvalid={this.state.errorMessages["email"]}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {""}
+                    {this.state.errorMessages["email"]}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
