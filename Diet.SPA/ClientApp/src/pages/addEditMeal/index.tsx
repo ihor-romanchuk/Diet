@@ -10,6 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import en from "date-fns/locale/en-US";
 
+import MealDto from "../../dtos/meal";
 import { getMeal, createMeal, updateMeal } from "../../services/meals";
 
 import Router from "../../routing/router";
@@ -21,20 +22,13 @@ interface IRouteParams {
   id: string;
 }
 
-interface MealModel {
-  id?: number;
-  name: string;
-  calories: number;
-  dateTimeCreated: Date;
-}
-
 interface IAddEditMealPageState {
   isPageLoading: boolean;
   isSaving: boolean;
   isEdit: boolean;
   errorMessages: any;
   validated: boolean;
-  meal: MealModel;
+  meal: MealDto;
 }
 
 class AddEditMealPage extends Component<
@@ -103,7 +97,7 @@ class AddEditMealPage extends Component<
             await createMeal(this.state.meal);
           }
 
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }
@@ -118,7 +112,7 @@ class AddEditMealPage extends Component<
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.map(e => {
+      data.errors.foreach(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });

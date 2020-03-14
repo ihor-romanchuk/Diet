@@ -56,7 +56,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
           });
 
           this.props.loginRedux(jwtDto);
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }
@@ -71,7 +71,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.map(e => {
+      data.errors.foreach(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
@@ -82,7 +82,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
   render() {
     return (
       <div className={styles.container}>
-        <h1>Sign in</h1>
+        <h2>Sign in</h2>
         <Form
           noValidate
           validated={this.state.validated}

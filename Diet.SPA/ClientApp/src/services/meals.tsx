@@ -3,8 +3,22 @@ import MealDto from "../dtos/meal";
 
 const url = "meals";
 
-export async function getMeals(): Promise<MealDto[]> {
-  let meals: MealDto[] = await get(url);
+export async function getMeals(
+  startDate?: Date,
+  endDate?: Date,
+  startTime?: Date,
+  endTime?: Date
+): Promise<MealDto[]> {
+  let queryParams: string[] = [];
+  if (startDate) queryParams.push(`startDate=${startDate.toISOString()}`);
+  if (endDate) queryParams.push(`endDate=${endDate.toISOString()}`);
+  if (startTime) queryParams.push(`startTime=${startTime.toISOString()}`);
+  if (endTime) queryParams.push(`endTime=${endTime.toISOString()}`);
+
+  let actionUrl = `${url}${
+    queryParams.length ? `?${queryParams.join("&")}` : ""
+  }`;
+  let meals: MealDto[] = await get(actionUrl);
   meals.forEach(meal => {
     meal.dateTimeCreated = new Date(`${meal.dateTimeCreated}Z`);
   });

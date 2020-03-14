@@ -10,6 +10,7 @@ namespace Diet.SPA
         {
             CreateMap<MealEntity, MealDto>().ReverseMap();
             CreateMap<ApplicationUserEntity, UserDto>().ReverseMap();
+            CreateMap<SettingEntity, SettingDto>().ReverseMap();
         }
     }
 }

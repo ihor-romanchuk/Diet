@@ -18,6 +18,7 @@ interface IRegisterPageState {
   isLoading: boolean;
   email: string;
   password: string;
+  confirmPassword: string;
   errorMessages: any;
   validated: boolean;
 }
@@ -32,6 +33,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
       isLoading: false,
       email: "",
       password: "",
+      confirmPassword: "",
       errorMessages: {},
       validated: false
     };
@@ -56,7 +58,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
           });
 
           this.props.loginRedux(jwtDto);
-          Router.routes.meals.go();
+          return Router.routes.meals.go();
         } catch (e) {
           this.setInvalidState(e);
         }
@@ -71,7 +73,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
   setInvalidState(data) {
     //todo: handle validation
     if (data.errors && data.errors.length > 0) {
-      data.errors.map(e => {
+      data.errors.foreach(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
@@ -82,7 +84,7 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
   render() {
     return (
       <div className={styles.container}>
-        <h1>Register</h1>
+        <h2>Register</h2>
         <Form
           noValidate
           validated={this.state.validated}
@@ -115,6 +117,20 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
               onChange={event =>
                 this.setState({
                   password: event.target.value
+                })
+              }
+              required
+            />
+          </Form.Group>
+          <Form.Group as={Col} md={6}>
+            <Form.Label>Confirm password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password..."
+              value={this.state.password}
+              onChange={event =>
+                this.setState({
+                  confirmPassword: event.target.value
                 })
               }
               required

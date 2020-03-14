@@ -51,16 +51,25 @@ export async function del<T>(url: string, model: T): Promise<any> {
   );
 }
 
-async function handleResponse<T>(promise: Promise<Response>): Promise<T> {
-  //todo: add reject
-  return promise.then(async (response: Response) => {
-    if (response.status === 401) {
-      store.dispatch(logout());
-      return null;
-    } else if (response.status === 204) {
-      return null;
-    } else {
-      return JSON.parse(await response.text());
+async function handleResponse<T>(promise: Promise<Response>): Promise<T | any> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let response: Response = await promise;
+      if (response.ok) {
+        if (response.status === 204) {
+          return resolve(null);
+        }
+
+        return resolve(JSON.parse(await response.text()));
+      } else {
+        if (response.status === 401) {
+          store.dispatch(logout());
+        }
+
+        return reject(JSON.parse(await response.text()));
+      }
+    } catch (e) {
+      return reject(e);
     }
   });
 }

@@ -10,9 +10,12 @@ import AuthorizeRoute from "../authentication/authorizeRoute";
 
 const DefaultLayoutComponent = ({ component: Component, ...rest }) => {
   return (
-    <Body>
-      <Component {...rest} />
-    </Body>
+    <>
+      <Header></Header>
+      <Body>
+        <Component {...rest} />
+      </Body>
+    </>
   );
 };
 
@@ -51,7 +54,6 @@ class Routes extends React.Component {
   public render() {
     return (
       <>
-        <Header></Header>
         <Switch>
           {Object.keys(Router.routes).map(key => (
             <DefaultLayoutRoute key={key} {...Router.routes[key].props} />

@@ -5,14 +5,20 @@ import {
   IReduxLogoutAction
 } from "../actions/userActions";
 
+import RoleEnum from "../../enums/role";
+
 export interface IReduxUserState {
   isAuthenticated: boolean;
   token: string;
+  email: string;
+  roles: RoleEnum[];
 }
 
 const initialState: IReduxUserState = {
   isAuthenticated: false,
-  token: null
+  token: null,
+  email: "",
+  roles: []
 };
 
 type TUserReducerActions =
@@ -29,19 +35,22 @@ export default function(
       return {
         ...state,
         isAuthenticated: action.isAuthenticated,
-        token: action.token
+        token: action.token,
+        email: action.email,
+        roles: action.roles
       };
     case EReduxActionTypes.Login:
       return {
         ...state,
         isAuthenticated: action.isAuthenticated,
-        token: action.token
+        token: action.token,
+        email: action.email,
+        roles: action.roles
       };
     case EReduxActionTypes.Logout:
       return {
         ...state,
-        isAuthenticated: false,
-        token: null
+        ...initialState
       };
     default:
       return state;

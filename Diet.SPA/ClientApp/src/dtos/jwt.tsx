@@ -1,3 +1,3 @@
-export default interface JwtDto {
+export default interface IJwtDto {
   token: string;
 }

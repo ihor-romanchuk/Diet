@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Diet.Core.Dtos;
+using Diet.Core.Exceptions;
 using Diet.Core.Repositories.Interfaces;
 using Diet.Core.Services.Interfaces;
 using Diet.Database.Entities;
@@ -21,17 +24,42 @@ namespace Diet.Core.Services
             _mealsRepository = mealsRepository;
         }
 
-        public async Task<List<MealDto>> GetAsync()
+        public async Task<List<MealDto>> GetAsync(DateTime? startDate, DateTime? endDate, DateTime? startTime, DateTime? endTime)
         {
-            List<MealDto> meals = await _mealsRepository.Get().ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
 
-            return meals;
+            IQueryable<MealEntity> meals = _mealsRepository.Get();
+            if (startDate.HasValue)
+                meals = meals.Where(m => m.DateTimeCreated >= startDate.Value);
+
+            if (endDate.HasValue)
+                meals = meals.Where(m => m.DateTimeCreated <= endDate.Value);
+
+            if (startTime!= endTime)
+            {
+                if(startTime.HasValue && endTime.HasValue && startTime.Value.Date < endTime.Value.Date)
+                {
+                    meals = meals.Where(m => m.DateTimeCreated.TimeOfDay >= startTime.Value.TimeOfDay || m.DateTimeCreated.TimeOfDay <= endTime.Value.TimeOfDay);
+                }
+                else
+                {
+                    if (startTime.HasValue)
+                        meals = meals.Where(m => m.DateTimeCreated.TimeOfDay >= startTime.Value.TimeOfDay);
+
+                    if (endTime.HasValue)
+                        meals = meals.Where(m => m.DateTimeCreated.TimeOfDay <= endTime.Value.TimeOfDay);
+                }
+            }
+
+            return await meals.ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
         public async Task<MealDto> GetByIdAsync(int id)
         {
-            var result = _mapper.Map<MealDto>(await _mealsRepository.GetByIdAsync(id));
+            MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);
+            if(mealEntity == null)
+                throw new NotFoundException();
 
+            var result = _mapper.Map<MealDto>(mealEntity);
             return result;
         }
 
@@ -52,23 +80,21 @@ namespace Diet.Core.Services
                 mealEntity = await _mealsRepository.GetByIdAsync(mealDto.Id);
             }
 
-            //todo: throw not found exception
-            if (mealEntity != null)
-            {
-                _mapper.Map(mealDto, mealEntity);
-                await _mealsRepository.UpdateAsync(mealEntity);
-            }
+            if(mealEntity == null)
+                throw new NotFoundException();
+
+            _mapper.Map(mealDto, mealEntity);
+            await _mealsRepository.UpdateAsync(mealEntity);
         }
 
         public async Task DeleteAsync(int id)
         {
             MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);
 
-            //todo: throw NotFoundException
-            if(mealEntity != null)
-            {
-                await _mealsRepository.DeleteAsync(mealEntity);
-            }
+            if (mealEntity == null)
+                throw new NotFoundException();
+
+            await _mealsRepository.DeleteAsync(mealEntity);
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diet.Core.Repositories
 {
+    /// <inheritdoc />
     public class MealsRepository: IMealsRepository
     {
         private readonly IApplicationDbContext _dbContext;
@@ -19,16 +20,19 @@ namespace Diet.Core.Repositories
             _userHelper = userHelper;
         }
 
+        /// <inheritdoc />
         public IQueryable<MealEntity> Get()
         {
             return _dbContext.Meals.Where(m => m.UserId == _userHelper.UserId);
         }
 
+        /// <inheritdoc />
         public async Task<MealEntity> GetByIdAsync(int id)
         {
             return await _dbContext.Meals.FirstOrDefaultAsync(m => m.UserId == _userHelper.UserId && m.Id == id);
         }
 
+        /// <inheritdoc />
         public async Task CreateAsync(MealEntity meal)
         {
             meal.UserId = _userHelper.UserId;
@@ -36,12 +40,14 @@ namespace Diet.Core.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(MealEntity meal)
         {
             meal.UserId = _userHelper.UserId;
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task DeleteAsync(MealEntity meal)
         {
             _dbContext.Remove(meal);

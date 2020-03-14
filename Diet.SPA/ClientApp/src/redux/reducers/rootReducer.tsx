@@ -1,10 +1,12 @@
 import { combineReducers } from "redux";
 import userReducer from "./userReducer";
+import mealReducer from "./mealReducer";
 
 export enum EReduxActionTypes {
   RestoreAuthentication = "RestoreAuthentication",
   Login = "Login",
-  Logout = "Logout"
+  Logout = "Logout",
+  SetMealFilters = "SetMealFilters"
 }
 
 export interface IReduxBaseAction {
@@ -12,9 +14,11 @@ export interface IReduxBaseAction {
 }
 
 const rootReducer = combineReducers({
-  userReducer
+  userReducer,
+  mealReducer
 });
 
-export type AppState = ReturnType<typeof rootReducer>;
+export type AppState = ReturnType<typeof rootReducer> &
+  ReturnType<typeof mealReducer>;
 
 export default rootReducer;

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Diet.Core;
 using Diet.Core.Dtos;
 using Diet.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diet.SPA.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = RolesConstants.User + "," + RolesConstants.Administrator)]
     [ApiController]
     [Route("api/meals")]
     public class MealsController : ControllerBase
@@ -20,9 +22,9 @@ namespace Diet.SPA.Controllers
         }
 
         [HttpGet("")]
-        public async Task<List<MealDto>> Get()
+        public async Task<List<MealDto>> Get(DateTime? startDate, DateTime? endDate, DateTime? startTime, DateTime? endTime)
         {
-            List<MealDto> result = await _mealsService.GetAsync();
+            List<MealDto> result = await _mealsService.GetAsync(startDate, endDate, startTime, endTime);
 
             return result;
         }

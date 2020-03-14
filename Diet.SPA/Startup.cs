@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Diet.Core.Configuration;
 using Diet.Core.Helpers;
 using Diet.Core.Helpers.Interfaces;
 using Diet.Core.Repositories;
@@ -13,6 +14,8 @@ using Diet.Database;
 using Diet.Database.Entities;
 using Diet.SPA.Filters;
 using FluentValidation.AspNetCore;
+using Diet.SPA.Middlewares;
+using Diet.SPA.ModelBinders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,18 +44,24 @@ namespace Diet.SPA
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentityCore<ApplicationUserEntity>()
                 .AddRoles<IdentityRole>()
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddCors();
 
-            // ===== Add Jwt Authentication ========
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
+            var jwtSettings = Configuration
+                .GetSection(nameof(JwtSettings))
+                .Get<JwtSettings>();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -61,10 +70,10 @@ namespace Diet.SPA
                     cfg.SaveToken = true;
                     cfg.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidIssuer = Configuration["JwtIssuer"],
-                        ValidAudience = Configuration["JwtIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
-                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                        ClockSkew = TimeSpan.Zero
                     };
                     cfg.Events = new JwtBearerEvents
                     {
@@ -102,6 +111,9 @@ namespace Diet.SPA
             services.AddTransient<IMealsService, MealsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ISettingsService, SettingsService>();
+            services.AddTransient<ISettingsRepository, SettingsRepository>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IJwtService, JwtService>();
 
             services.TryAddScoped<UserManager<ApplicationUserEntity>>();
             services.TryAddScoped<RoleManager<IdentityRole>>();
@@ -109,6 +121,10 @@ namespace Diet.SPA
             services.AddMvc(op => {
                 op.Filters.Add<ValidationFilters>();
             })
+                .AddMvcOptions(options =>
+                {
+                    options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+                })
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 ).AddFluentValidation(fv =>
@@ -126,18 +142,14 @@ namespace Diet.SPA
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Diet API", Version = "v1" });
-                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
                 {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Please insert JWT with Bearer into field",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http
+                    Scheme = "bearer"
                 });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecurityScheme { Name = JwtBearerDefaults.AuthenticationScheme } , new string[] { } }
-                });
+                c.OperationFilter<AuthenticationRequirementsOperationFilter>();
             });
             services.AddSwaggerGenNewtonsoftSupport();
         }
@@ -168,6 +180,7 @@ namespace Diet.SPA
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseRouting();
             
             app.UseCors(builder => builder
