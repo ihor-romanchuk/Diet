@@ -22,14 +22,9 @@ namespace Diet.Core.Services.Interfaces
         Task<SettingDto> GetByTypeAsync(SettingType type);
 
         /// <summary>
-        /// Creates new setting entity.
+        /// Updates existing setting entity or creates new one if does not exist.
         /// </summary>
-        Task CreateAsync(SettingDto settingDto);
-
-        /// <summary>
-        /// Updates existing setting entity.
-        /// </summary>
-        Task UpdateAsync(SettingDto settingDto);
+        Task CreateUpdateAsync(SettingDto settingDto);
 
         /// <summary>
         /// Deletes setting entity.

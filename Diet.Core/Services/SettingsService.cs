@@ -45,23 +45,20 @@ namespace Diet.Core.Services
         }
 
         /// <inheritdoc />
-        public async Task CreateAsync(SettingDto settingDto)
-        {
-            var settingEntity = _mapper.Map<SettingEntity>(settingDto);
-
-            await _settingsRepository.CreateAsync(settingEntity);
-        }
-
-        /// <inheritdoc />
-        public async Task UpdateAsync(SettingDto settingDto)
+        public async Task CreateUpdateAsync(SettingDto settingDto)
         {
             SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(settingDto.Type);
 
             if (settingEntity == null)
-                throw new NotFoundException();
-
-            _mapper.Map(settingDto, settingEntity);
-            await _settingsRepository.UpdateAsync(settingEntity);
+            {
+                settingEntity = _mapper.Map<SettingEntity>(settingDto);
+                await _settingsRepository.CreateAsync(settingEntity);
+            }
+            else
+            {
+                _mapper.Map(settingDto, settingEntity);
+                await _settingsRepository.UpdateAsync(settingEntity);
+            }
         }
 
         /// <inheritdoc />

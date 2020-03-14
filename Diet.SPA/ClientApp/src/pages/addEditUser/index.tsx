@@ -181,7 +181,11 @@ class AddEditUserPage extends Component<
                     value={this.state.user.email}
                     onChange={this.handleInput}
                     required
+                    isInvalid={this.state.errorMessages["email"]}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {""}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row>
