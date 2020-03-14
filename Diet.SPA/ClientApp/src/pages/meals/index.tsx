@@ -71,6 +71,7 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
     lastMidnight.setHours(0, 0, 0, 0);
     let nextMidnight = new Date();
     nextMidnight.setHours(24, 0, 0, 0);
+    nextMidnight.setMilliseconds(-1);
 
     return {
       startDate: lastMidnight,
@@ -188,8 +189,10 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
                             return {
                               filters: {
                                 ...state.filters,
-                                startDate: date,
-                                endDate: _.max([date, state.filters.endDate])
+                                startDate: date || state.filters.startDate,
+                                endDate:
+                                  _.max([date, state.filters.endDate]) ||
+                                  state.filters.endDate
                               }
                             };
                           });
@@ -208,7 +211,10 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
                         onChange={date => {
                           this.setState(state => {
                             return {
-                              filters: { ...state.filters, endDate: date }
+                              filters: {
+                                ...state.filters,
+                                endDate: date || state.filters.endDate
+                              }
                             };
                           });
                         }}
@@ -234,8 +240,10 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
                             return {
                               filters: {
                                 ...state.filters,
-                                startTime: time,
-                                endTime: _.max([time, state.filters.endTime])
+                                startTime: time || state.filters.startTime,
+                                endTime:
+                                  _.max([time, state.filters.endTime]) ||
+                                  state.filters.endTime
                               }
                             };
                           });
@@ -260,7 +268,10 @@ class MealsPage extends Component<TMealsPageProps, IMealsPageState> {
                         onChange={time => {
                           this.setState(state => {
                             return {
-                              filters: { ...state.filters, endTime: time }
+                              filters: {
+                                ...state.filters,
+                                endTime: time || state.filters.endTime
+                              }
                             };
                           });
                         }}
