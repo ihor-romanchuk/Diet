@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Diet.Core.Configuration
+﻿namespace Diet.Core.Configuration
 {
     public class JwtSettings
     {
