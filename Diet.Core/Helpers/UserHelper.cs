@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Diet.Core.Helpers
 {
+    /// <inheritdoc />
     public class UserHelper: IUserHelper
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -13,6 +14,7 @@ namespace Diet.Core.Helpers
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <inheritdoc />
         public string UserId => _httpContextAccessor.HttpContext.User.GetLoggedInUserId<string>();
     }
 }

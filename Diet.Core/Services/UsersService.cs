@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diet.Core.Services
 {
+    /// <inheritdoc />
     public class UsersService : IUsersService
     {
         private readonly IMapper _mapper;
@@ -23,6 +24,7 @@ namespace Diet.Core.Services
             _userManager = userManager;
         }
 
+        /// <inheritdoc />
         public async Task<List<UserDto>> GetAsync()
         {
             List<UserDto> result = await _userManager.Users.OrderBy(u => u.UserName).ProjectTo<UserDto>(_mapper.ConfigurationProvider).ToListAsync();
@@ -35,6 +37,7 @@ namespace Diet.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public async Task<UserDto> GetByIdAsync(string id)
         {
             UserDto user = await _userManager.Users.Where(u => u.Id == id)
@@ -47,6 +50,7 @@ namespace Diet.Core.Services
             return user;
         }
 
+        /// <inheritdoc />
         public async Task CreateAsync(UserDto userDto)
         {
             var user = new ApplicationUserEntity
@@ -68,6 +72,7 @@ namespace Diet.Core.Services
             throw new BadRequestException(result.Errors);
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(UserDto userDto)
         {
             ApplicationUserEntity userEntity = await _userManager.FindByIdAsync(userDto.Id);
@@ -108,6 +113,7 @@ namespace Diet.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task DeleteAsync(string id)
         {
             ApplicationUserEntity userEntity = await _userManager.FindByIdAsync(id);

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Diet.Core.Services
 {
+    /// <inheritdoc />
     public class AccountService : IAccountService
     {
         private readonly UserManager<ApplicationUserEntity> _userManager;
@@ -21,6 +22,7 @@ namespace Diet.Core.Services
             _jwtService = jwtService;
         }
 
+        /// <inheritdoc />
         public async Task<JwtDto> Login(LoginDto model)
         {
             ApplicationUserEntity user = await _userManager.FindByNameAsync(model.Email) ?? await _userManager.FindByEmailAsync(model.Email);
@@ -35,6 +37,7 @@ namespace Diet.Core.Services
             throw new BadRequestException("Incorrect email and/or password.");
         }
 
+        /// <inheritdoc />
         public async Task<JwtDto> Register(RegisterDto model)
         {
             var user = new ApplicationUserEntity
@@ -56,6 +59,7 @@ namespace Diet.Core.Services
             throw new BadRequestException(result.Errors);
         }
 
+        /// <inheritdoc />
         public async Task UpdateAccountInfoAsync(AccountDto account)
         {
             ApplicationUserEntity currentUserEntity = await _userManager.FindByIdAsync(_userHelper.UserId);

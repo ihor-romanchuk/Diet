@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Diet.Core.Services
 {
+    /// <inheritdoc />
     public class JwtService : IJwtService
     {
         private readonly UserManager<ApplicationUserEntity> _userManager;
@@ -28,6 +29,7 @@ namespace Diet.Core.Services
             _jwtSettings = jwtSettings;
         }
 
+        /// <inheritdoc />
         public async Task<JwtDto> GenerateJwtAsync(ApplicationUserEntity user)
         {
             List<Claim> claims = await GetClaimsAsync(user);

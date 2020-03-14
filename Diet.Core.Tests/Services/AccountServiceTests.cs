@@ -31,7 +31,7 @@ namespace Diet.Core.Tests.Services
         }
 
         [Test]
-        public void Get_UserDoesNotExist_ThrowsBadRequestException()
+        public void Login_UserDoesNotExist_ThrowsBadRequestException()
         {
             var loginDto = new LoginDto
             {
@@ -44,20 +44,51 @@ namespace Diet.Core.Tests.Services
             _userManagerMock.Verify(p => p.FindByEmailAsync(loginDto.Email), Times.Once);
         }
 
-        //[Test]
-        //public void Get_PasswordIsNotCorrect_ThrowsBadRequestException()
-        //{
-        //    var loginDto = new LoginDto
-        //    {
-        //        Email = "email",
-        //        Password = "password"
-        //    };
+        [Test]
+        public void Login_PasswordIsNotCorrect_ThrowsBadRequestException()
+        {
+            var loginDto = new LoginDto
+            {
+                Email = "email",
+                Password = "password"
+            };
+            var userEntity = new ApplicationUserEntity
+            {
+                Email = loginDto.Email
+            };
 
-        //    _userManagerMock.Setup(p => p.FindByNameAsync(loginDto.Email)).Returns()
+            _userManagerMock.Setup(p => p.FindByNameAsync(loginDto.Email))
+                .ReturnsAsync(userEntity);
 
-        //    Assert.ThrowsAsync<BadRequestException>(async () => { await _accountService.Login(loginDto); });
-        //    _userManagerMock.Verify(p => p.FindByNameAsync(loginDto.Email), Times.Once);
-        //    _userManagerMock.Verify(p => p.FindByEmailAsync(loginDto.Email), Times.Once);
-        //}
+            Assert.ThrowsAsync<BadRequestException>(async () => { await _accountService.Login(loginDto); });
+            _userManagerMock.Verify(p => p.FindByNameAsync(loginDto.Email), Times.Once);
+            _userManagerMock.Verify(p => p.CheckPasswordAsync(userEntity, loginDto.Password), Times.Once);
+        }
+
+        [Test]
+        public async Task Login_UserAndPasswordAreValid_GeneratesJwt()
+        {
+            var loginDto = new LoginDto
+            {
+                Email = "email",
+                Password = "password"
+            };
+            var userEntity = new ApplicationUserEntity
+            {
+                Email = loginDto.Email
+            };
+            var expectedResult = new JwtDto();
+
+            _userManagerMock.Setup(p => p.FindByNameAsync(loginDto.Email))
+                .ReturnsAsync(userEntity);
+            _userManagerMock.Setup(p => p.CheckPasswordAsync(userEntity, loginDto.Password)).ReturnsAsync(true);
+            _jwtServiceMock.Setup(p => p.GenerateJwtAsync(userEntity)).ReturnsAsync(expectedResult);
+
+            JwtDto actualResult = await _accountService.Login(loginDto);
+            Assert.AreEqual(expectedResult, actualResult);
+            _userManagerMock.Verify(p => p.FindByNameAsync(loginDto.Email), Times.Once);
+            _userManagerMock.Verify(p => p.CheckPasswordAsync(userEntity, loginDto.Password), Times.Once);
+            _jwtServiceMock.Verify(p => p.GenerateJwtAsync(userEntity), Times.Once);
+        }
     }
 }

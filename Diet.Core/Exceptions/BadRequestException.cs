@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Diet.Core.Exceptions
 {
+    /// <summary>
+    /// Should be used when bad request happened.
+    /// </summary>
     public class BadRequestException : Exception
     {
         public BadRequestException(string message) : base(message)

@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diet.SPA.Controllers
 {
+    /// <summary>
+    /// Provides CRUD operations on settings,
+    /// </summary>
     [Authorize(Roles = RolesConstants.User + "," + RolesConstants.Administrator)]
     [ApiController]
     [Route("api/settings")]

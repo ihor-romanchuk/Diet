@@ -4,6 +4,9 @@ using Diet.Database.Entities;
 
 namespace Diet.SPA
 {
+    /// <summary>
+    /// Mapping configurations for AutoMapper.
+    /// </summary>
     public class MapperProfile : Profile
     {
         public MapperProfile()

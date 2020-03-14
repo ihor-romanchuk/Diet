@@ -44,18 +44,87 @@ namespace Diet.SPA
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
-
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddCors();
+
+            ConfigureAuthenticationServices(services);
+
+            services.AddAuthorization();
+
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
+
+            RegisterCustomServices(services);
+
+            ConfigureMvcServices(services);
+
+            ConfigureSwaggerServices(services);
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Diet API V1");
+                c.RoutePrefix = "swagger";
+            });
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+            app.UseRouting();
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
+                .WithHeaders("Content-Type", "Authorization"));
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
+            });
+        }
+
+        private void ConfigureAuthenticationServices(IServiceCollection services)
+        {
             services.AddIdentityCore<ApplicationUserEntity>()
                 .AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddCors();
+            services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
 
             var jwtSettings = Configuration
                 .GetSection(nameof(JwtSettings))
@@ -83,19 +152,15 @@ namespace Diet.SPA
                             {
                                 context.Response.Headers.Add("Token-Expired", "true");
                             }
+
                             return Task.CompletedTask;
                         }
-                };
+                    };
                 });
+        }
 
-            services.AddAuthorization();
-            
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
-
+        private static void RegisterCustomServices(IServiceCollection services)
+        {
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MapperProfile());
@@ -117,28 +182,35 @@ namespace Diet.SPA
 
             services.TryAddScoped<UserManager<ApplicationUserEntity>>();
             services.TryAddScoped<RoleManager<IdentityRole>>();
+        }
 
-            services.AddMvc(op => {
+        private static void ConfigureMvcServices(IServiceCollection services)
+        {
+            services.AddMvc(op =>
+            {
                 op.Filters.Add<ValidationFilters>();
             })
-                .AddMvcOptions(options =>
-                {
-                    options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
-                })
-                .AddNewtonsoftJson(options =>
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                ).AddFluentValidation(fv =>
-                {
-                    fv.RegisterValidatorsFromAssemblyContaining<Startup>();
-                    fv.ImplicitlyValidateChildProperties = true;
+            .AddMvcOptions(options =>
+            {
+                options.ModelBinderProviders.Insert(0, new DateTimeModelBinderProvider());
+            })
+            .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            ).AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+                fv.ImplicitlyValidateChildProperties = true;
 
-                });
+            });
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+        }
 
+        private static void ConfigureSwaggerServices(IServiceCollection services)
+        {
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Diet API", Version = "v1" });
@@ -152,58 +224,6 @@ namespace Diet.SPA
                 c.OperationFilter<AuthenticationRequirementsOperationFilter>();
             });
             services.AddSwaggerGenNewtonsoftSupport();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-            
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Diet API V1");
-                c.RoutePrefix = "swagger";
-            });
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
-            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
-            app.UseRouting();
-            
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
-                .WithHeaders("Content-Type", "Authorization"));
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
         }
     }
 }

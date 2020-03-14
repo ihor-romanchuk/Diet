@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diet.Core.Services
 {
+    /// <inheritdoc />
     public class MealsService: IMealsService
     {
         private readonly IMapper _mapper;
@@ -24,6 +25,7 @@ namespace Diet.Core.Services
             _mealsRepository = mealsRepository;
         }
 
+        /// <inheritdoc />
         public async Task<List<MealDto>> GetAsync(DateTime? startDate, DateTime? endDate, DateTime? startTime, DateTime? endTime)
         {
 
@@ -53,6 +55,7 @@ namespace Diet.Core.Services
             return await meals.ProjectTo<MealDto>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
+        /// <inheritdoc />
         public async Task<MealDto> GetByIdAsync(int id)
         {
             MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);
@@ -63,6 +66,7 @@ namespace Diet.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public async Task CreateAsync(MealDto mealDto)
         {
             mealDto.Id = 0;
@@ -71,6 +75,7 @@ namespace Diet.Core.Services
             await _mealsRepository.CreateAsync(mealEntity);
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(MealDto mealDto)
         {
             MealEntity mealEntity = null;
@@ -87,6 +92,7 @@ namespace Diet.Core.Services
             await _mealsRepository.UpdateAsync(mealEntity);
         }
 
+        /// <inheritdoc />
         public async Task DeleteAsync(int id)
         {
             MealEntity mealEntity = await _mealsRepository.GetByIdAsync(id);

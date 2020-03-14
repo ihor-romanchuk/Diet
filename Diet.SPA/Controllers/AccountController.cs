@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diet.SPA.Controllers
 {
+    /// <summary>
+    /// Provides APIs for account management.
+    /// </summary>
     [Authorize]
     [Route("api/account")]
     public class AccountController : Controller

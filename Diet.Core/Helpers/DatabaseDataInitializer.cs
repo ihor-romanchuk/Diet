@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Diet.Core.Helpers
 {
+    /// <inheritdoc />
     public class DatabaseDataInitializer: IDatabaseDataInitializer
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -13,6 +14,7 @@ namespace Diet.Core.Helpers
             _roleManager = roleManager;
         }
 
+        /// <inheritdoc />
         public async Task SeedRolesAsync()
         {
             string[] roles = { RolesConstants.User, RolesConstants.Manager, RolesConstants.Administrator };

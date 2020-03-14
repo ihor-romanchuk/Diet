@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diet.SPA.Controllers
 {
+    /// <summary>
+    /// Provides CRUD operations on users.
+    /// </summary>
     [Authorize(Roles = RolesConstants.Manager + "," + RolesConstants.Administrator)]
     [ApiController]
     [Route("api/users")]

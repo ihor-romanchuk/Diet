@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diet.Core.Services
 {
+    /// <inheritdoc />
     public class SettingsService: ISettingsService
     {
         private readonly IMapper _mapper;
@@ -23,6 +24,7 @@ namespace Diet.Core.Services
             _settingsRepository = settingsRepository;
         }
 
+        /// <inheritdoc />
         public async Task<List<SettingDto>> GetAsync()
         {
             List<SettingDto> meals = await _settingsRepository.Get().ProjectTo<SettingDto>(_mapper.ConfigurationProvider).ToListAsync();
@@ -30,6 +32,7 @@ namespace Diet.Core.Services
             return meals;
         }
 
+        /// <inheritdoc />
         public async Task<SettingDto> GetByTypeAsync(SettingType type)
         {
             SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(type);
@@ -41,6 +44,7 @@ namespace Diet.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public async Task CreateAsync(SettingDto settingDto)
         {
             var settingEntity = _mapper.Map<SettingEntity>(settingDto);
@@ -48,6 +52,7 @@ namespace Diet.Core.Services
             await _settingsRepository.CreateAsync(settingEntity);
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(SettingDto settingDto)
         {
             SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(settingDto.Type);
@@ -59,6 +64,7 @@ namespace Diet.Core.Services
             await _settingsRepository.UpdateAsync(settingEntity);
         }
 
+        /// <inheritdoc />
         public async Task DeleteAsync(SettingType type)
         {
             SettingEntity settingEntity = await _settingsRepository.GetByTypeAsync(type);

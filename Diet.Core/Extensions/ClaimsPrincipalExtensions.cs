@@ -3,8 +3,15 @@ using System.Security.Claims;
 
 namespace Diet.Core.Extensions
 {
+    /// <summary>
+    /// Extensions on <see cref="ClaimsPrincipal"/>.
+    /// </summary>
     public static class ClaimsPrincipalExtensions
     {
+        /// <summary>
+        /// Gets id of authenticated user.
+        /// </summary>
+        /// <typeparam name="T">Type of user id</typeparam>
         public static T GetLoggedInUserId<T>(this ClaimsPrincipal principal)
         {
             if (principal == null)
@@ -26,6 +33,9 @@ namespace Diet.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Gets username of authenticated user.
+        /// </summary>
         public static string GetLoggedInUserName(this ClaimsPrincipal principal)
         {
             if (principal == null)
@@ -34,6 +44,11 @@ namespace Diet.Core.Extensions
             return principal.FindFirstValue(ClaimTypes.Name);
         }
 
+        /// <summary>
+        /// Gets email of authenticated user.
+        /// </summary>
+        /// <param name="principal"></param>
+        /// <returns></returns>
         public static string GetLoggedInUserEmail(this ClaimsPrincipal principal)
         {
             if (principal == null)

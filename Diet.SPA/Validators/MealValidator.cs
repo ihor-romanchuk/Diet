@@ -1,13 +1,11 @@
-﻿using Diet.Core.Dtos;
-using Diet.Database.Entities;
+﻿using System.Threading.Tasks;
+using Diet.Core.Dtos;
 using FluentValidation;
-using System.Threading.Tasks;
 
-namespace Diet.SPA.EntityValidator
+namespace Diet.SPA.Validators
 {
     public class MealValidator : AbstractValidator<MealDto>
     {
-
         public MealValidator() 
         {
             RuleFor(meal => meal.Name).NotNull().NotEmpty().WithMessage("Meal name can't be empty");

@@ -1,11 +1,7 @@
 ﻿using Diet.Core.Dtos;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Diet.SPA.EntityValidator
+namespace Diet.SPA.Validators
 {
     public class SettingsValidator : AbstractValidator<SettingDto>
     {
