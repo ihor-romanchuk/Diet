@@ -228,6 +228,7 @@ class AddEditUserPage extends Component<
                         value={this.state.user.password || ""}
                         onChange={this.handleInput}
                         required
+                        isInvalid={this.state.errorMessages.password}
                       />
                       <Form.Control.Feedback type="invalid">
                         {(this.state.errorMessages &&
