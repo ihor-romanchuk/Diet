@@ -8,7 +8,7 @@ namespace Diet.SPA.Validators
         public UserValidator()
         {
             RuleFor(x => x.Email).NotNull().NotEmpty().WithMessage("You should specify email").EmailAddress().WithMessage("Email is not valid");
-            RuleFor(x => x.Password).NotNull().NotEmpty().WithMessage("You should specify password");
+            RuleFor(x => x.Password).NotNull().NotEmpty().When(p => string.IsNullOrEmpty(p.Id)).WithMessage("You should specify password");
             RuleFor(x => x.Roles).NotNull().NotEmpty().WithMessage("You should set at least one role");
         }
     }
