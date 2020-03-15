@@ -200,7 +200,12 @@ class AddEditMealPage extends Component<
                   selected={this.state.meal.dateTimeCreated}
                   onChange={date => {
                     this.setState(state => {
-                      return { meal: { ...state.meal, dateTimeCreated: date } };
+                      return {
+                        meal: {
+                          ...state.meal,
+                          dateTimeCreated: date || state.meal.dateTimeCreated
+                        }
+                      };
                     });
                   }}
                   required

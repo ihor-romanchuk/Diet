@@ -7,11 +7,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 import ModificationState from "../../enums/modificationState";
 import SettingType from "../../enums/settingType";
-import {
-  getSettings,
-  createSetting,
-  updateSetting
-} from "../../services/settings";
+import { getSettings, createUpdateSetting } from "../../services/settings";
 
 import Router from "../../routing/router";
 
@@ -126,19 +122,11 @@ class SettingsPage extends Component<any, ISettingsPageState> {
             this.state.settings
               .filter(
                 s =>
-                  s.modificationState === ModificationState.Created &&
+                  (s.modificationState === ModificationState.Created ||
+                    s.modificationState === ModificationState.Modified) &&
                   s.value != null
               )
-              .map(s => createSetting({ type: s.type, value: s.value }))
-              .concat(
-                this.state.settings
-                  .filter(
-                    s =>
-                      s.modificationState === ModificationState.Modified &&
-                      s.value != null
-                  )
-                  .map(s => updateSetting({ type: s.type, value: s.value }))
-              )
+              .map(s => createUpdateSetting({ type: s.type, value: s.value }))
           );
 
           return Router.routes.meals.go();

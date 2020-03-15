@@ -28,8 +28,11 @@ namespace Diet.Core.Services
         /// <inheritdoc />
         public async Task<List<MealDto>> GetAsync(DateTime? startDate, DateTime? endDate, DateTime? startTime, DateTime? endTime)
         {
-
             IQueryable<MealEntity> meals = _mealsRepository.Get();
+
+            if (startDate.HasValue && endDate.HasValue && startDate.Value == endDate.Value)
+                endDate = endDate.Value.AddDays(1);
+
             if (startDate.HasValue)
                 meals = meals.Where(m => m.DateTimeCreated >= startDate.Value);
 

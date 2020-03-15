@@ -40,19 +40,11 @@ namespace Diet.SPA.Controllers
             return result;
         }
 
-        [HttpPost("")]
-        public async Task<ActionResult> Create(SettingDto mealDto)
-        {
-            await _settingsService.CreateAsync(mealDto);
-
-            return NoContent();
-        }
-
         [HttpPut("{type}")]
-        public async Task<ActionResult> Update(SettingType type, [FromBody]SettingDto mealDto)
+        public async Task<ActionResult> CreateUpdate(SettingType type, [FromBody]SettingDto mealDto)
         {
             mealDto.Type = type;
-            await _settingsService.UpdateAsync(mealDto);
+            await _settingsService.CreateUpdateAsync(mealDto);
 
             return NoContent();
         }

@@ -130,7 +130,6 @@ class AddEditUserPage extends Component<
   };
 
   setInvalidState(data) {
-    //todo
     if (data.errors && data.errors.length > 0) {
       data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
@@ -209,6 +208,7 @@ class AddEditUserPage extends Component<
                     value={this.state.user.email}
                     onChange={this.handleInput}
                     required
+                    isInvalid={this.state.errorMessages["email"]}
                   />
                   <Form.Control.Feedback type="invalid">
                     {(this.state.errorMessages &&
