@@ -14,11 +14,15 @@ import { login } from "../../services/account";
 
 import styles from "./index.module.scss";
 
+const emailValidationErrorMessage = "You should specify correct email";
+const passwordValidationErrorMessage = "You should specify password";
+
 interface ILoginPageState {
   isLoading: boolean;
   email: string;
   password: string;
   errorMessages: any;
+  generalErrorMessage: string;
   validated: boolean;
 }
 
@@ -33,6 +37,7 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
       email: "",
       password: "",
       errorMessages: {},
+      generalErrorMessage: "",
       validated: false
     };
 
@@ -41,7 +46,11 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
 
   async handleSubmit(event): Promise<void> {
     if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
+      this.setState({
+        isLoading: true,
+        errorMessages: {},
+        generalErrorMessage: ""
+      });
       event.preventDefault();
       event.stopPropagation();
 
@@ -71,11 +80,13 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.foreach(e => {
+      data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
       });
+    } else if (data.message) {
+      this.setState({ generalErrorMessage: data.message });
     }
   }
 
@@ -88,6 +99,9 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
           validated={this.state.validated}
           onSubmit={this.handleSubmit}
         >
+          <div className={styles.generalErrorMessage}>
+            {this.state.generalErrorMessage}
+          </div>
           <Form.Group as={Col} md={6}>
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -100,10 +114,12 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
               }
               placeholder="Email..."
               required={true}
-              isInvalid={this.state.errorMessages["Email"]}
+              isInvalid={this.state.errorMessages["email"]}
             />
             <Form.Control.Feedback type="invalid">
-              {this.state.errorMessages && this.state.errorMessages["Email"]}
+              {(this.state.errorMessages &&
+                this.state.errorMessages["email"]) ||
+                emailValidationErrorMessage}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md={6}>
@@ -118,7 +134,13 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
                 })
               }
               required
+              isInvalid={this.state.errorMessages["password"]}
             />
+            <Form.Control.Feedback type="invalid">
+              {(this.state.errorMessages &&
+                this.state.errorMessages["password"]) ||
+                passwordValidationErrorMessage}
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md={6}>
             <Button

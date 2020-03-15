@@ -14,6 +14,9 @@ import Router from "../../routing/router";
 
 import styles from "./index.module.scss";
 
+const emailValidationErrorMessage = "You should specify correct email";
+const passwordValidationErrorMessage = "You should specify password";
+
 interface IRouteParams {
   id: string;
 }
@@ -24,6 +27,7 @@ interface IAddEditUserPageState {
   isEdit: boolean;
   showPasswordInput: boolean;
   errorMessages: any;
+  generalErrorMessage: string;
   validated: boolean;
   user: UserDto;
 }
@@ -44,6 +48,7 @@ class AddEditUserPage extends Component<
       isEdit: isEdit,
       showPasswordInput: !isEdit,
       errorMessages: {},
+      generalErrorMessage: "",
       validated: false,
       user: {
         id: id,
@@ -75,12 +80,16 @@ class AddEditUserPage extends Component<
 
   async handleSubmit(event): Promise<void> {
     if (!this.state.isSaving) {
-      this.setState({ isSaving: true });
+      this.setState({
+        isSaving: true,
+        generalErrorMessage: "",
+        errorMessages: {}
+      });
       event.preventDefault();
       event.stopPropagation();
 
       const form = event.currentTarget;
-      if (form.checkValidity() === true) {
+      if (form.checkValidity() === true && this.checkCheckBoxValidity()) {
         this.setState({ validated: false });
 
         try {
@@ -106,14 +115,30 @@ class AddEditUserPage extends Component<
     }
   }
 
+  checkCheckBoxValidity = (): boolean => {
+    debugger;
+    if (this.state.user.roles.length == 0) {
+      this.setState({
+        errorMessages: {
+          ...this.state.errorMessages,
+          roles: "You should set at least one role"
+        }
+      });
+      return false;
+    }
+    return true;
+  };
+
   setInvalidState(data) {
     //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.foreach(e => {
+      data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
       });
+    } else if (data.message) {
+      this.setState({ generalErrorMessage: data.message });
     }
   }
 
@@ -171,6 +196,9 @@ class AddEditUserPage extends Component<
               validated={this.state.validated}
               onSubmit={this.handleSubmit}
             >
+              <div className={styles.generalErrorMessage}>
+                {this.state.generalErrorMessage}
+              </div>
               <Form.Row>
                 <Form.Group as={Col} xs={12} md={6}>
                   <Form.Label>Email</Form.Label>
@@ -182,6 +210,11 @@ class AddEditUserPage extends Component<
                     onChange={this.handleInput}
                     required
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {(this.state.errorMessages &&
+                      this.state.errorMessages["email"]) ||
+                      emailValidationErrorMessage}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row>
@@ -198,6 +231,11 @@ class AddEditUserPage extends Component<
                         onChange={this.handleInput}
                         required
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {(this.state.errorMessages &&
+                          this.state.errorMessages["password"]) ||
+                          passwordValidationErrorMessage}
+                      </Form.Control.Feedback>
                     </>
                   ) : (
                     <Button
@@ -221,9 +259,13 @@ class AddEditUserPage extends Component<
                         label={role.label}
                         checked={this.state.user.roles.includes(role.value)}
                         onChange={() => this.handleRolesChange(role.value)}
+                        isInvalid={this.state.errorMessages["roles"]}
                       ></Form.Check>
                     );
                   })}
+                  <div className={styles.errorMessage}>
+                    {this.state.errorMessages["roles"]}
+                  </div>
                 </Form.Group>
               </Form.Row>
               <Form.Row>
