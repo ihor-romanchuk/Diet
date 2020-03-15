@@ -171,11 +171,11 @@ class SettingsPage extends Component<any, ISettingsPageState> {
                     this.handleSettingChange(SettingType.CaloriesPerDay, e)
                   }
                   required
-                  isInvalid={this.state.errorMessages.caloriesPerDay}
+                  isInvalid={this.state.errorMessages.value}
                 />
                 <Form.Control.Feedback type="invalid">
                   {(this.state.errorMessages &&
-                    this.state.errorMessages.caloriesPerDay) ||
+                    this.state.errorMessages.value) ||
                     caloriesPerDayValidationErrorMessage}
                 </Form.Control.Feedback>
               </Form.Group>
