@@ -114,7 +114,7 @@ class AddEditUserPage extends Component<
   }
 
   checkCheckBoxValidity = (): boolean => {
-    if (this.state.user.roles.length == 0) {
+    if (this.state.user.roles.length === 0) {
       this.setState({
         errorMessages: {
           ...this.state.errorMessages,
