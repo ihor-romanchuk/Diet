@@ -47,6 +47,22 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  checkCustomValidations = (): boolean => {
+    let failedValidations = [];
+    if (this.state.password !== this.state.confirmPassword) {
+      failedValidations.push({
+        fieldName: "confirmPassword",
+        message: "Password and confirm password should be the same"
+      });
+    }
+
+    if (failedValidations.length) {
+      this.setInvalidState({ errors: failedValidations });
+      return false;
+    }
+    return true;
+  };
+
   async handleSubmit(event): Promise<void> {
     if (!this.state.isLoading) {
       this.setState({
@@ -59,30 +75,30 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
 
       const form = event.currentTarget;
       if (form.checkValidity() === true) {
-        this.setState({ validated: false });
+        if (this.checkCustomValidations()) {
+          try {
+            let jwtDto = await register({
+              email: this.state.email,
+              password: this.state.password
+            });
 
-        try {
-          let jwtDto = await register({
-            email: this.state.email,
-            password: this.state.password
-          });
-
-          this.props.loginRedux(jwtDto);
-          return Router.routes.meals.go();
-        } catch (e) {
-          this.setInvalidState(e);
+            this.props.loginRedux(jwtDto);
+            return Router.routes.meals.go();
+          } catch (e) {
+            this.setInvalidState(e);
+          }
         }
-
-        this.setState({ isLoading: false });
       } else {
-        this.setState({ validated: true, isLoading: false });
+        this.setState({ validated: true });
       }
+
+      this.setState({ isLoading: false });
     }
   }
 
   setInvalidState(data) {
-    //todo: handle validation
     if (data.errors && data.errors.length > 0) {
+      this.setState({ validated: false });
       data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
@@ -118,11 +134,10 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
               }
               placeholder="Email..."
               required={true}
-              isInvalid={this.state.errorMessages["email"]}
+              isInvalid={this.state.errorMessages.email}
             />
             <Form.Control.Feedback type="invalid">
-              {(this.state.errorMessages &&
-                this.state.errorMessages["email"]) ||
+              {(this.state.errorMessages && this.state.errorMessages.email) ||
                 emailValidationErrorMessage}
             </Form.Control.Feedback>
           </Form.Group>
@@ -138,11 +153,11 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
                 })
               }
               required
-              isInvalid={this.state.errorMessages["password"]}
+              isInvalid={this.state.errorMessages.password}
             />
             <Form.Control.Feedback type="invalid">
               {(this.state.errorMessages &&
-                this.state.errorMessages["password"]) ||
+                this.state.errorMessages.password) ||
                 passwordValidationErrorMessage}
             </Form.Control.Feedback>
           </Form.Group>
@@ -151,16 +166,18 @@ class RegisterPage extends Component<TRegisterPageProps, IRegisterPageState> {
             <Form.Control
               type="password"
               placeholder="Password..."
-              value={this.state.password}
+              value={this.state.confirmPassword}
               onChange={event =>
                 this.setState({
                   confirmPassword: event.target.value
                 })
               }
               required
+              isInvalid={this.state.errorMessages.confirmPassword}
             />
             <Form.Control.Feedback type="invalid">
-              {confirmPasswordValidationErrorMessage}
+              {this.state.errorMessages.confirmPassword ||
+                confirmPasswordValidationErrorMessage}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md={6}>

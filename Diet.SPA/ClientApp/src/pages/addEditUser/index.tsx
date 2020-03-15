@@ -89,34 +89,31 @@ class AddEditUserPage extends Component<
       event.stopPropagation();
 
       const form = event.currentTarget;
-      if (form.checkValidity() === true && this.checkCheckBoxValidity()) {
-        this.setState({ validated: false });
+      if (form.checkValidity() === true) {
+        if (this.checkCheckBoxValidity()) {
+          try {
+            if (this.state.isEdit) {
+              await updateUser(this.state.user);
+            } else {
+              await createUser(this.state.user);
+            }
 
-        try {
-          this.setState({
-            isSaving: true
-          });
-
-          if (this.state.isEdit) {
-            await updateUser(this.state.user);
-          } else {
-            await createUser(this.state.user);
+            return Router.routes.users.go();
+          } catch (e) {
+            this.setInvalidState(e);
           }
-
-          return Router.routes.users.go();
-        } catch (e) {
-          this.setInvalidState(e);
+        } else {
+          this.setState({ validated: false });
         }
-
-        this.setState({ isSaving: false });
       } else {
-        this.setState({ validated: true, isSaving: false });
+        this.setState({ validated: true });
       }
+
+      this.setState({ isSaving: false });
     }
   }
 
   checkCheckBoxValidity = (): boolean => {
-    debugger;
     if (this.state.user.roles.length == 0) {
       this.setState({
         errorMessages: {
@@ -131,6 +128,7 @@ class AddEditUserPage extends Component<
 
   setInvalidState(data) {
     if (data.errors && data.errors.length > 0) {
+      this.setState({ validated: false });
       data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
@@ -208,11 +206,11 @@ class AddEditUserPage extends Component<
                     value={this.state.user.email}
                     onChange={this.handleInput}
                     required
-                    isInvalid={this.state.errorMessages["email"]}
+                    isInvalid={this.state.errorMessages.email}
                   />
                   <Form.Control.Feedback type="invalid">
                     {(this.state.errorMessages &&
-                      this.state.errorMessages["email"]) ||
+                      this.state.errorMessages.email) ||
                       emailValidationErrorMessage}
                   </Form.Control.Feedback>
                 </Form.Group>
@@ -233,7 +231,7 @@ class AddEditUserPage extends Component<
                       />
                       <Form.Control.Feedback type="invalid">
                         {(this.state.errorMessages &&
-                          this.state.errorMessages["password"]) ||
+                          this.state.errorMessages.password) ||
                           passwordValidationErrorMessage}
                       </Form.Control.Feedback>
                     </>
@@ -259,12 +257,12 @@ class AddEditUserPage extends Component<
                         label={role.label}
                         checked={this.state.user.roles.includes(role.value)}
                         onChange={() => this.handleRolesChange(role.value)}
-                        isInvalid={this.state.errorMessages["roles"]}
+                        isInvalid={this.state.errorMessages.roles}
                       ></Form.Check>
                     );
                   })}
                   <div className={styles.errorMessage}>
-                    {this.state.errorMessages["roles"]}
+                    {this.state.errorMessages.roles}
                   </div>
                 </Form.Group>
               </Form.Row>

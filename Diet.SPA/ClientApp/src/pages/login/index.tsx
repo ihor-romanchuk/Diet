@@ -113,12 +113,11 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
                 })
               }
               placeholder="Email..."
-              required={true}
-              isInvalid={this.state.errorMessages["email"]}
+              required
+              isInvalid={this.state.errorMessages.email}
             />
             <Form.Control.Feedback type="invalid">
-              {(this.state.errorMessages &&
-                this.state.errorMessages["email"]) ||
+              {(this.state.errorMessages && this.state.errorMessages.email) ||
                 emailValidationErrorMessage}
             </Form.Control.Feedback>
           </Form.Group>
@@ -134,11 +133,11 @@ class LoginPage extends Component<TLoginPageProps, ILoginPageState> {
                 })
               }
               required
-              isInvalid={this.state.errorMessages["password"]}
+              isInvalid={this.state.errorMessages.password}
             />
             <Form.Control.Feedback type="invalid">
               {(this.state.errorMessages &&
-                this.state.errorMessages["password"]) ||
+                this.state.errorMessages.password) ||
                 passwordValidationErrorMessage}
             </Form.Control.Feedback>
           </Form.Group>
