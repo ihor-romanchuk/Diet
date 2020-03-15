@@ -114,7 +114,7 @@ class AddEditUserPage extends Component<
   }
 
   checkCheckBoxValidity = (): boolean => {
-    if (this.state.user.roles.length == 0) {
+    if (this.state.user.roles.length === 0) {
       this.setState({
         errorMessages: {
           ...this.state.errorMessages,
@@ -228,6 +228,7 @@ class AddEditUserPage extends Component<
                         value={this.state.user.password || ""}
                         onChange={this.handleInput}
                         required
+                        isInvalid={this.state.errorMessages.password}
                       />
                       <Form.Control.Feedback type="invalid">
                         {(this.state.errorMessages &&
