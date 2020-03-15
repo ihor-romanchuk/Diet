@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Diet.Core.Dtos;
 using Diet.Core.ErrorHandling.Exceptions;
 using Diet.Core.Helpers.Interfaces;
@@ -112,6 +113,33 @@ namespace Diet.Core.Tests.Services
 
             JwtDto actualResult = await _accountService.Register(registerDto);
             Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [Test]
+        public async Task UpdateAccountInfoAsync_UserAndPasswordAreValid_SavesChanges()
+        {
+            var userId = Guid.NewGuid().ToString();
+            var userEntity = new ApplicationUserEntity();
+            var account = new AccountDto
+            {
+                Email = "email",
+                Password = "password"
+            };
+            string token = Guid.NewGuid().ToString();
+
+            _userHelperMock.SetupGet(p => p.UserId).Returns(userId);
+            _userManagerMock.Setup(p => p.FindByIdAsync(userId)).ReturnsAsync(userEntity);
+            _userManagerMock.Setup(p => p.GeneratePasswordResetTokenAsync(userEntity)).ReturnsAsync(token);
+            _userManagerMock.Setup(p => p.ResetPasswordAsync(userEntity, token, account.Password))
+                .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock.Setup(p =>
+                    p.UpdateAsync(
+                        It.Is<ApplicationUserEntity>(u => u.Email == account.Email && u.UserName == account.Email)))
+                .ReturnsAsync(IdentityResult.Success);
+
+            await _accountService.UpdateAccountInfoAsync(account);
+            _userHelperMock.VerifyAll();
+            _userManagerMock.VerifyAll();
         }
     }
 }
