@@ -18,6 +18,7 @@ interface IAccountPageState {
   isPageLoading: boolean;
   isSaving: boolean;
   showPasswordInput: boolean;
+  generalErrorMessage: string;
   errorMessages: any;
   validated: boolean;
   account: IAccountDto;
@@ -25,6 +26,9 @@ interface IAccountPageState {
 
 type TAccountPageProps = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
+
+const emailValidationErrorMessage = "You should specify correct email";
+const passwordValidationErrorMessage = "You should specify password";
 
 class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
   constructor(props: any) {
@@ -35,6 +39,7 @@ class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
       isSaving: false,
       showPasswordInput: false,
       errorMessages: {},
+      generalErrorMessage: "",
       validated: false,
       account: {
         email: this.props.email,
@@ -53,7 +58,11 @@ class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
 
   async handleSubmit(event): Promise<void> {
     if (!this.state.isSaving) {
-      this.setState({ isSaving: true });
+      this.setState({
+        isSaving: true,
+        generalErrorMessage: "",
+        errorMessages: {}
+      });
       event.preventDefault();
       event.stopPropagation();
 
@@ -62,32 +71,30 @@ class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
         this.setState({ validated: false });
 
         try {
-          this.setState({
-            isSaving: true
-          });
-
           await update(this.state.account);
 
           this.props.logout();
         } catch (e) {
           this.setInvalidState(e);
         }
-
-        this.setState({ isSaving: false });
       } else {
-        this.setState({ validated: true, isSaving: false });
+        this.setState({ validated: true });
       }
+
+      this.setState({ isSaving: false });
     }
   }
 
   setInvalidState(data) {
-    //todo
     if (data.errors && data.errors.length > 0) {
-      data.errors.foreach(e => {
+      this.setState({ validated: false });
+      data.errors.map(e => {
         let newErrorMessages = { ...this.state.errorMessages };
         newErrorMessages[e.fieldName] = e.message;
         this.setState({ errorMessages: newErrorMessages });
       });
+    } else if (data.message) {
+      this.setState({ generalErrorMessage: data.message });
     }
   }
 
@@ -117,6 +124,9 @@ class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
               validated={this.state.validated}
               onSubmit={this.handleSubmit}
             >
+              <div className={styles.generalErrorMessage}>
+                {this.state.generalErrorMessage}
+              </div>
               <Form.Row>
                 <Form.Group as={Col} xs={12} md={6}>
                   <Form.Label>Email</Form.Label>
@@ -127,7 +137,13 @@ class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
                     value={this.state.account.email}
                     onChange={this.handleInput}
                     required
+                    isInvalid={this.state.errorMessages.email}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {(this.state.errorMessages &&
+                      this.state.errorMessages.email) ||
+                      emailValidationErrorMessage}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row>
@@ -143,7 +159,13 @@ class AccountPage extends Component<TAccountPageProps, IAccountPageState> {
                         value={this.state.account.password}
                         onChange={this.handleInput}
                         required
+                        isInvalid={this.state.errorMessages.password}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {(this.state.errorMessages &&
+                          this.state.errorMessages.password) ||
+                          passwordValidationErrorMessage}
+                      </Form.Control.Feedback>
                     </>
                   ) : (
                     <Button
